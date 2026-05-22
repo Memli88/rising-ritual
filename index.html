@@ -1,470 +1,781 @@
 <!DOCTYPE html>
-<html lang="fa" dir="ltr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Rising Ritual">
+<meta name="theme-color" content="#0d0f14">
 <title>THE RISING RITUAL</title>
 <style>
-/* ── Reset & iPhone 15 Pro Simulation ── */
-* { margin:0; padding:0; box-sizing:border-box; }
+/* ── FORCE DARK — no external deps ── */
 html, body {
-    height: 100%;
-    height: -webkit-fill-available;
-    background: #0a0c11;
-    color: #e8eaf0;
-    font-family: -apple-system, SF Pro Display, Helvetica Neue, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    overflow: hidden;
-    user-select: none;
+  background-color: #0d0f14 !important;
+  color: #e8eaf0 !important;
+  margin: 0 !important; 
+  padding: 0 !important;
+  font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100%; 
+  height: -webkit-fill-available;
+  overflow: hidden;
+  position: fixed; 
+  width: 100%;
+}
+* { 
+  box-sizing: border-box; 
+  -webkit-tap-highlight-color: transparent; 
+  user-select: none; 
+  margin: 0; 
+  padding: 0; 
+  outline: none;
+  border: none;
 }
 
-/* Dynamic Island & Safe Areas */
 :root {
-    --sat: env(safe-area-inset-top, 44px);
-    --sab: env(safe-area-inset-bottom, 34px);
+  --bg:      #0d0f14;
+  --bg2:     #12151c;
+  --text:    #e8eaf0;
+  --text2:   #8890a8;
+  --text3:   #454d62;
+  --accent:  #4f8ef7;
+  --fire:    #f05a28;
+  --gold:    #f0a843;
+  --green:   #3ecf78;
+  --purple:  #a78bfa;
+  /* Dynamic safe areas with fallbacks for iPhone 15 Pro */
+  --sat: env(safe-area-inset-top, 47px);
+  --sab: env(safe-area-inset-bottom, 34px);
 }
 
-#container {
-    width: 100%;
-    max-width: 430px;           /* iPhone 15 Pro width */
-    margin: 0 auto;
-    height: 100vh;
-    height: -webkit-fill-available;
-    background: #0a0c11;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+/* ── SCREENS ── */
+#idle, #complete {
+  position: fixed; inset: 0;
+  background-color: var(--bg) !important;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 200;
+  padding: 40px 36px;
+  text-align: center;
 }
+#idle.hidden, #complete.hidden { display: none; }
 
-/* Status Bar */
-#status-bar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: calc(var(--sat) + 28px);
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    padding: 0 24px 8px;
-    z-index: 100;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
+.idle-glyph { font-size: 54px; margin-bottom: 24px; animation: breathe 4s ease-in-out infinite; }
+@keyframes breathe {
+  0%,100%{ transform:scale(1); opacity:.8; }
+  50%{ transform:scale(1.07); opacity:1; }
 }
+.idle-eyebrow { font-size: 10px; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+.idle-h1 { font-size: 27px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; margin-bottom: 6px; }
+.idle-sub { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 36px; }
+.idle-stats { display: flex; gap: 32px; margin-bottom: 44px; }
+.idle-stat { text-align: center; }
+.stat-n { font-size: 34px; font-weight: 800; color: var(--text); display: block; font-variant-numeric: tabular-nums; }
+.stat-l { font-size: 9px; letter-spacing: 2px; color: var(--text3); text-transform: uppercase; margin-top: 2px; display: block; }
 
-#time { font-weight: 700; }
-#status-right { display: flex; align-items: center; gap: 6px; }
+#btn-start {
+  width: 100%; max-width: 280px; padding: 19px 0;
+  background: var(--accent); border-radius: 16px;
+  font-size: 16px; font-weight: 700; color: #fff; cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 8px 32px rgba(79,142,247,.4);
+  transition: transform .15s, opacity .15s;
+}
+#btn-start:active { transform: scale(.97); opacity: .9; }
 
-/* Main App */
+.complete-icon { font-size: 62px; margin-bottom: 22px; animation: breathe 3s ease-in-out infinite; }
+.complete-h { font-size: 20px; font-weight: 700; color: var(--green); letter-spacing: 1px; margin-bottom: 10px; }
+.complete-p { font-size: 14px; color: var(--text2); line-height: 1.8; margin-bottom: 34px; }
+#btn-restart { padding: 14px 36px; background: var(--bg2); border-radius: 14px; font-size: 14px; font-weight: 600; color: var(--text); cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);}
+
+/* ── FLASH ── */
+#flash { position: fixed; inset:0; background: rgba(79,142,247,.07); pointer-events:none; opacity:0; z-index:500; }
+#flash.on { animation: fa .4s ease; }
+@keyframes fa { 0%{opacity:1} 100%{opacity:0} }
+
+/* ── WAKE VIDEO ── */
+#wv { position:fixed; top:-9999px; left:-9999px; width:1px; height:1px; opacity:.01; }
+
+/* ══ MAIN APP ══ */
 #app {
-    height: 100%;
-    padding-top: calc(var(--sat) + 48px);
-    padding-bottom: calc(var(--sab) + 12px);
-    display: flex;
-    flex-direction: column;
-    background: #0a0c11;
+  display: flex; flex-direction: column;
+  height: 100%; height: -webkit-fill-available;
+  background-color: var(--bg) !important;
+  /* Push content strictly below the dynamic top bar */
+  padding-top: calc(var(--sat) + 54px);
+  padding-bottom: calc(var(--sab) + 4px);
+  overflow: hidden;
 }
 
-/* Header */
-#header {
-    padding: 0 24px 12px;
-    text-align: center;
+/* ── TOP BAR (Fix for Notch/Island) ── */
+#top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: calc(var(--sat) + 54px);
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 22px 10px; /* Base padding */
+  padding-top: var(--sat); /* Safe area padding pushes content down */
+  background: var(--bg);
+  z-index: 50;
 }
-#header-title {
-    font-size: 13px;
-    letter-spacing: 3.5px;
-    text-transform: uppercase;
-    font-weight: 700;
-    color: #f0a843;
-    margin-bottom: 4px;
-}
+.top-title { font-size: 11px; letter-spacing: 3px; color: var(--text3); text-transform: uppercase; font-weight: 600; margin-bottom: 2px;}
+#snd-btn { background: none; font-size: 18px; cursor: pointer; color: var(--text2); padding: 2px; }
 
-/* Phase */
+/* ── PHASE ROW ── */
 #phase-row {
-    padding: 0 24px 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 22px 6px;
+  flex-shrink: 0;
 }
-#phase-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.06);
-    padding: 4px 14px;
-    border-radius: 30px;
-}
-#phase-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #f0a843;
-}
-#phase-lbl {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-}
+#phase-pill { display: flex; align-items: center; gap: 6px; }
+#phase-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex-shrink:0; }
+#phase-lbl { font-size: 10px; letter-spacing: 2.5px; color: var(--text2); text-transform: uppercase; font-weight: 600; }
+#move-ctr  { font-size: 10px; color: var(--text3); letter-spacing: .5px; font-variant-numeric: tabular-nums; }
 
-/* Move Name */
+/* ── MOVE NAME ── */
 #move-name {
-    font-size: 26px;
-    font-weight: 800;
-    text-align: center;
-    padding: 0 24px 8px;
-    line-height: 1.1;
-    color: #fff;
+  padding: 0 22px;
+  font-size: 22px; font-weight: 800; color: var(--text);
+  line-height: 1.15; letter-spacing: -.3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex-shrink: 0;
 }
 
-/* Timer */
+/* ── TIMER AREA ── */
 #timer-wrap {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px 22px 4px;
+  position: relative; flex-shrink: 0;
 }
-#timer-circle {
-    width: 240px;
-    height: 240px;
-    position: relative;
-}
-#ring-svg {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(-90deg);
-}
+#ring-svg { position: absolute; top:50%; left:50%; transform: translate(-50%,-50%) rotate(-90deg); pointer-events:none; }
+.ring-bg { fill:none; stroke:#1a1e28; stroke-width:3; }
+.ring-fg { fill:none; stroke-width:3; stroke-linecap:round; transition: stroke-dashoffset .9s linear, stroke .4s; }
 #big-time {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 68px;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -4px;
-    z-index: 2;
+  font-size: 80px; font-weight: 800; color: var(--text);
+  font-variant-numeric: tabular-nums; letter-spacing: -3px;
+  line-height: 1; position: relative; z-index:1;
+  transition: color .3s;
 }
+#big-time.urgent { color: var(--fire); }
 
-/* Content */
-#content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 24px;
-    -webkit-overflow-scrolling: touch;
-}
-#content::-webkit-scrollbar { display: none; }
-
+/* ── DESC ── */
+#desc-area { padding: 6px 22px 0; flex-shrink:0; }
 #desc-txt {
-    font-size: 15px;
-    line-height: 1.65;
-    color: #c8ccd8;
-    margin-bottom: 16px;
+  font-size: 13px; color: var(--text2); line-height: 1.65;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-#breath-ln {
-    color: #f0a843;
-    font-size: 13.5px;
-    font-weight: 600;
-}
+#breath-ln { margin-top: 5px; font-size: 11.5px; font-weight: 600; color: var(--accent); line-height: 1.5; }
 
-/* Next */
-#next-row {
-    background: rgba(255,255,255,0.05);
-    margin: 16px -24px;
-    padding: 14px 24px;
-    font-size: 14px;
-}
-#next-lbl { color: #888; font-size: 11px; letter-spacing: 1px; }
-#next-nm { color: #fff; font-weight: 500; }
+/* ── NEXT ── */
+#next-row { display:flex; align-items:center; gap:8px; padding: 10px 22px 0; flex-shrink:0; }
+#next-lbl { font-size: 9px; letter-spacing: 2px; color: var(--text3); text-transform:uppercase; font-weight:600; }
+#next-nm  { font-size: 12px; color: var(--text2); font-weight: 500; }
 
-/* Bandha */
-#bandha-row {
-    margin: 12px 0;
-}
+/* ── BANDHAS ── */
+#bandha-row { display:flex; flex-wrap:wrap; gap:6px; padding: 10px 22px 0; flex-shrink:0; }
 .btag {
-    display: inline-block;
-    padding: 6px 14px;
-    background: rgba(240,90,40,0.15);
-    color: #f05a28;
-    border-radius: 30px;
-    font-size: 12.5px;
-    font-weight: 700;
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 10px; font-weight: 700; letter-spacing: .4px;
 }
+.bm  { color:#f05a28; background:rgba(240,90,40,.12); }
+.bu  { color:#f0a843; background:rgba(240,168,67,.12); }
+.bj  { color:#4f8ef7; background:rgba(79,142,247,.12); }
+.bmh { color:#a78bfa; background:rgba(167,139,250,.12); }
+.bn  { color:var(--text3); background:rgba(255,255,255,.04); font-weight:500; }
 
-/* Steps & Chakra */
+/* ── SCROLL DETAILS ── */
+#scroll-area {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding: 14px 22px 6px;
+  margin-top: 8px;
+}
+#scroll-area::-webkit-scrollbar { display:none; }
+
 .sec-lbl {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: #666;
-    margin: 20px 0 10px;
-    font-weight: 700;
+  font-size: 9px; letter-spacing: 2.5px; text-transform:uppercase;
+  color: var(--text3); font-weight: 600;
+  margin-bottom: 8px; margin-top: 14px;
 }
-.steps {
-    list-style: none;
-}
+.sec-lbl:first-child { margin-top: 0; }
+
+.steps { list-style:none; }
 .steps li {
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    font-size: 14.5px;
-    line-height: 1.55;
-    display: flex;
-    gap: 14px;
+  display:flex; gap:12px; margin-bottom:8px;
+  font-size: 13px; line-height:1.6; color:var(--text2);
+  align-items:flex-start;
 }
 .steps li .sn {
-    width: 24px;
-    height: 24px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    flex-shrink: 0;
+  min-width: 22px; height:22px; border-radius:50%;
+  background: rgba(255,255,255,.05);
+  color: var(--text3); font-size:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; flex-shrink:0; margin-top:1px;
+  font-variant-numeric: tabular-nums;
 }
 
-/* Bottom Controls */
+.chakra-row { display:flex; align-items:flex-start; gap:10px; }
+.chakra-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+.chakra-body { font-size:13px; color:var(--text2); line-height:1.6; }
+.chakra-nm { font-weight:700; color:var(--text); }
+
+.tip-box {
+  background: rgba(79,142,247,.06);
+  padding: 10px 14px; border-radius: 8px;
+  font-size:12.5px; color:var(--text2); line-height:1.65;
+}
+
+/* ── CONTROLS ── */
 #ctrl-wrap {
-    padding: 12px 24px;
-    background: linear-gradient(to top, #0a0c11, transparent);
-}
-#prog-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    font-size: 12px;
-    color: #777;
-}
-#prog-track {
-    flex: 1;
-    height: 3px;
-    background: #222;
-    border-radius: 3px;
-    overflow: hidden;
-}
-#prog-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #f0a843, #f05a28);
-    width: 0%;
-    transition: width 0.4s ease;
+  flex-shrink:0;
+  padding: 12px 22px 8px;
+  background: linear-gradient(0deg, var(--bg) 60%, transparent);
 }
 
-/* Buttons */
-#btn-row {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    align-items: center;
-}
+/* total progress */
+#prog-row { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+#prog-elapsed, #prog-remain { font-size: 11px; color:var(--text3); font-variant-numeric:tabular-nums; white-space:nowrap; }
+#prog-track { flex:1; height:4px; background:#1a1e28; border-radius:2px; overflow:hidden; }
+#prog-fill { height:100%; background: linear-gradient(90deg, var(--purple), var(--accent)); border-radius:2px; transition: width .4s ease; width:0%; }
+
+/* buttons */
+#btn-row { display:flex; align-items:center; justify-content:center; gap:14px; }
 .cb {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.08);
-    border: none;
-    color: white;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border-radius:50%;
+  background:rgba(255,255,255,.06);
+  color:var(--text); transition:all .12s; flex-shrink:0;
 }
+.cb:active { transform:scale(.88); background:rgba(255,255,255,.12); }
+.cb.sm { width:44px; height:44px; font-size:14px; }
+.cb.md { width:50px; height:50px; font-size:16px; }
 .cb.lg {
-    width: 72px;
-    height: 72px;
-    background: #f05a28;
-    font-size: 24px;
-    box-shadow: 0 8px 30px rgba(240,90,40,0.4);
+  width:66px; height:66px; font-size:22px;
+  background: var(--accent); color:#fff;
+  box-shadow: 0 6px 24px rgba(79,142,247,.4);
 }
+.cb.lg:active { background:#3a7ee0; }
+.cb.stop { background:rgba(240,90,40,.1); color:var(--fire); }
+.cb.plus { font-size:11px; font-weight:700; color:var(--text2); }
 </style>
 </head>
 <body>
 
-<div id="container">
+<video id="wv" loop muted playsinline>
+  <source src="data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAAIZnJlZQAAAs1tZGF0AAACrgYF//+q3EXpvebZSLeWLNgg2SPu73gyNjQgLSBjb3JlIDE1MiByMjg1NCBlOWE1OTAzIC0gSC4yNjQvTVBFRy00IEFWQyBjb2RlYyAtIENvcHlsZWZ0IDIwMDMtMjAxNyAtIGh0dHA6Ly93d3cudmlkZW9sYW4ub3JnL3gyNjQuaHRtbCAtIG9wdGlvbnM6IGNhYmFjPTEgcmVmPTMgZGVibG9jaz0xOjA6MCBhbmFseXNlPTB4MzoweDExMyBtZT1oZXggc3VibWU9NyBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTE2IGNocm9tYV9tZT0xIHRyZWxsaXM9MSA4eDhkY3Q9MSBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTMgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz0zIGJfcHlyYW1pZD0yIGJfYWRhcHQ9MSBiX2JpYXM9MCBkaXJlY3Q9MSB3ZWlnaHRiPTEgb3Blbl9nb3A9MCB3ZWlnaHRwPTIga2V5aW50PTI1MCBrZXlpbnRfbWluPTI1IHNjZW5lY3V0PTQwIGludHJhX3JlZnJlc2g9MCByY19sb29rYWhlYWQ9NDAgcmM9Y3JmIG1idHJlZT0xIGNyZj0yMy4wIHFjb21wPTAuNjAgcXBtaW49MCBxcG1heD02OSBxcHN0ZXA9NCBpcF9yYXRpbz0xLjQwIGFxPTE6MS4wMACAAAAPZWxpYnMzMjZHcgAA//73iFT95bVP5b5V/////gICAgICAgICICgoKCgoKCgoKCgoKCgoKCgoKCgoICAoKCgoKCgoKCgoKCgoKCgoKCgoKCAoKCgoKCgoKCgoKCgoKCgoKCgoKCggKCgoKCgoKCgoKCgoKCgoKCgoKCgoICg==" type="video/mp4">
+</video>
 
-    <!-- Status Bar -->
-    <div id="status-bar">
-        <div id="time">01:27</div>
-        <div id="status-right">
-            <span>14%</span>
-            <span>🔋</span>
-        </div>
+<div id="flash"></div>
+
+<div id="idle">
+  <div class="idle-glyph">⚡</div>
+  <div class="idle-eyebrow">Morning Practice</div>
+  <div class="idle-h1">The Rising Ritual</div>
+  <div class="idle-sub">Kundalini · Qigong · Yoga<br>Complete morning sequence</div>
+  <div class="idle-stats">
+    <div class="idle-stat"><span class="stat-n">22</span><span class="stat-l">min</span></div>
+    <div class="idle-stat"><span class="stat-n">7</span><span class="stat-l">phases</span></div>
+    <div class="idle-stat"><span class="stat-n">20</span><span class="stat-l">moves</span></div>
+  </div>
+  <button id="btn-start" onclick="startRitual()">▶ Begin Practice</button>
+</div>
+
+<div id="complete" class="hidden">
+  <div class="complete-icon">🌙</div>
+  <div class="complete-h">PRACTICE COMPLETE</div>
+  <div class="complete-p">Rest in stillness.<br>Feel the energy integrate.<br><br><em>SAT NAM</em></div>
+  <button id="btn-restart" onclick="restartRitual()">Restart</button>
+</div>
+
+<div id="app">
+
+  <div id="top-bar">
+    <div class="top-title">The Rising Ritual</div>
+    <button id="snd-btn" onclick="toggleSound()">🔔</button>
+  </div>
+
+  <div id="phase-row">
+    <div id="phase-pill">
+      <div id="phase-dot"></div>
+      <span id="phase-lbl">—</span>
     </div>
+    <div id="move-ctr">1 / 20</div>
+  </div>
 
-    <div id="app">
+  <div id="move-name">Ready</div>
 
-        <div id="header">
-            <div id="header-title">THE RISING RITUAL</div>
-        </div>
+  <div id="timer-wrap">
+    <svg id="ring-svg" width="220" height="220" viewBox="0 0 220 220">
+      <circle class="ring-bg" cx="110" cy="110" r="100"/>
+      <circle id="ring-arc" class="ring-fg" cx="110" cy="110" r="100" stroke-dasharray="628.3" stroke-dashoffset="0" stroke="#4f8ef7"/>
+    </svg>
+    <div id="big-time">00:00</div>
+  </div>
 
-        <div id="phase-row">
-            <div id="phase-pill">
-                <div id="phase-dot"></div>
-                <span id="phase-lbl">WARM-UP</span>
-            </div>
-            <div id="move-ctr">1 / 20</div>
-        </div>
+  <div id="desc-area">
+    <div id="desc-txt">—</div>
+    <div id="breath-ln">—</div>
+  </div>
 
-        <div id="move-name">Root Stomp & Bounce</div>
+  <div id="next-row">
+    <span id="next-lbl">NEXT →</span>
+    <span id="next-nm">—</span>
+  </div>
 
-        <div id="timer-wrap">
-            <div id="timer-circle">
-                <svg id="ring-svg" width="240" height="240" viewBox="0 0 240 240">
-                    <circle cx="120" cy="120" r="108" fill="none" stroke="#1f252f" stroke-width="14"/>
-                    <circle id="ring-progress" cx="120" cy="120" r="108" fill="none" stroke="#f0a843" 
-                            stroke-width="14" stroke-dasharray="678" stroke-dashoffset="678" 
-                            stroke-linecap="round"/>
-                </svg>
-                <div id="big-time">00:58</div>
-            </div>
-        </div>
+  <div id="bandha-row"></div>
 
-        <div id="content">
-            <div id="desc-txt">Stand barefoot. Bounce gently from both knees — heels barely leave the ground. Arms hang completely loose. After 20s add a soft heel-stomp on each...</div>
-            <div id="breath-ln">↳ Inhale 2 counts through nose · Exhale soft "huh" through mouth on each stomp</div>
+  <div id="scroll-area">
+    <div id="scroll-content"></div>
+  </div>
 
-            <div id="next-row">
-                <span id="next-lbl">NEXT →</span> 
-                <span id="next-nm">Lymph Node Tapping • 60s</span>
-            </div>
-
-            <div id="bandha-row">
-                <span class="btag">Mula Bandha — light</span>
-            </div>
-
-            <div class="sec-lbl">HOW TO PERFORM</div>
-            <ul class="steps" id="steps-list"></ul>
-
-            <div class="sec-lbl">CHAKRA</div>
-            <div id="chakra-info"></div>
-        </div>
-
-        <div id="ctrl-wrap">
-            <div id="prog-row">
-                <span id="prog-elapsed">00:02</span>
-                <div id="prog-track"><div id="prog-fill"></div></div>
-                <span id="prog-remain">21:13</span>
-            </div>
-            <div id="btn-row">
-                <button class="cb" onclick="prevMove()">⏮</button>
-                <button class="cb" onclick="stopRitual()">■</button>
-                <button class="cb lg" id="pp-btn" onclick="togglePause()">⏸</button>
-                <button class="cb" onclick="nextMove()">⏭</button>
-                <button class="cb" onclick="skipAdd()">+15</button>
-            </div>
-        </div>
+  <div id="ctrl-wrap">
+    <div id="prog-row">
+      <span id="prog-elapsed">00:00</span>
+      <div id="prog-track"><div id="prog-fill"></div></div>
+      <span id="prog-remain">22:15</span>
     </div>
+    <div id="btn-row">
+      <button class="cb sm" onclick="prevMove()" title="Previous">⏮</button>
+      <button class="cb md stop" onclick="stopRitual()" title="Stop">■</button>
+      <button class="cb lg" id="pp-btn" onclick="togglePause()">▶</button>
+      <button class="cb md" onclick="nextMove()" title="Next">⏭</button>
+      <button class="cb sm plus" onclick="skipAdd()" title="+15s">+15s</button>
+    </div>
+  </div>
+
 </div>
 
 <script>
-// ==================== DATA & STATE ====================
-const SEQ = [ /* همان آرایه SEQ قبلی شما (کامل) */ 
-    // ... (برای کوتاه شدن اینجا خلاصه شده، در نسخه نهایی تمام حرکات را بگذارید)
-    { phase:'warmup', dur:60, name:'Root Stomp & Bounce', /* ... */ },
-    // تمام حرکات دیگر ...
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const PHASES = {
+  warmup:{ lbl:'WARM-UP',         col:'#f0a843', emoji:'🟠' },
+  mob:   { lbl:'MOBILITY BRIDGE', col:'#a78bfa', emoji:'🟣' },
+  hypo:  { lbl:'HYPOPRESSIVE',    col:'#4f8ef7', emoji:'🔵' },
+  fire:  { lbl:'KUNDALINI FIRE',  col:'#f05a28', emoji:'🔴' },
+  qi:    { lbl:'QIGONG FLOW',     col:'#3ecf78', emoji:'🟢' },
+  yoga:  { lbl:'YOGA FLOW',       col:'#7bb8e8', emoji:'🌿' },
+  cool:  { lbl:'COOL-DOWN',       col:'#a78bfa', emoji:'🌙' },
+};
+
+const SEQ = [
+  { phase:'warmup', dur:60, name:'Root Stomp & Bounce',
+    desc:'Stand barefoot. Bounce gently from both knees — heels barely leave the ground. Arms hang completely loose. After 20s add a soft heel-stomp on each downbeat. Keep the whole body soft: jaw dropped, shoulders released.',
+    breath:'Inhale 2 counts through nose · Exhale soft "huh" through mouth on each stomp',
+    bandhas:[{l:'Mula Bandha — light',c:'bm',n:'Gently lift perineum on exhale stomp. Release on inhale.'}],
+    chakra:{name:'Muladhara · Root',col:'#c4203c',note:'Deep red disc at the base of the spine — brightens with each stomp.'},
+    steps:['Stand barefoot on the floor.','Bounce gently from both knees — heels barely leave the ground.','Let arms hang completely loose and shake naturally.','After 20 seconds, add a soft heel-stomp on each downbeat.','Keep the whole body soft — jaw relaxed, shoulders dropped.'],
+    tip:'Activates the plantar fascia, calves, and hip flexors while triggering lymphatic pump action in the lower extremities.' },
+
+  { phase:'warmup', dur:60, name:'Lymph Node Tapping',
+    desc:'Using loose fists or cupped palms, move systematically through major lymph node sites. Tapping should feel like satisfying percussion — not painful. Cupped palms create a slight suction effect.',
+    breath:'Inhale slow 4 counts · Exhale fully 6 counts · Tap in rhythm with the exhale phase',
+    bandhas:[{l:'No bandhas',c:'bn',n:'Keep entire belly and pelvic floor completely soft so lymph moves freely.'}],
+    chakra:{name:'Whole body',col:'#7bb8e8',note:'Visualise bright blue light radiating from each lymph node site as you tap.'},
+    steps:['Armpits (axillary nodes) — 8 firm taps each side','Sternum / thymus — 8 taps with fingertips','Inner elbows — 6 taps each','Groin crease (inguinal nodes) — 8 taps each side','Behind the knees — 6 taps each'],
+    tip:'Cupped palms create a suction effect — more stimulating than flat-hand tapping.' },
+
+  { phase:'warmup', dur:60, name:'Qigong Shaking',
+    desc:'Feet shoulder-width, knees slightly bent. Begin bouncing the knees, then allow a natural tremor to travel upward through legs, hips, torso, and arms. After ~15 seconds the shaking should feel involuntary.',
+    breath:'Completely uncontrolled — do not guide the breath at all. Simply observe what arises.',
+    bandhas:[{l:'No bandhas',c:'bn',n:'Full nervous system surrender. All locks released.'}],
+    chakra:{name:'Muladhara · Root',col:'#c4203c',note:'Feel the tremor rooting downward into the earth with each oscillation.'},
+    steps:['Feet shoulder-width, knees slightly bent — just unlock them.','Begin bouncing the knees gently.','Allow a natural tremor to travel upward through legs, hips, torso, arms.','Arms hang loose. Jaw open slightly. Eyes soft.','After 15 seconds the shaking should feel involuntary — do not force it.'],
+    tip:'Mirrors the TRE (Trauma/Tension Release Exercise) mechanism. Discharges morning cortisol and releases thoracolumbar fascia before any spinal work.' },
+
+  { phase:'mob', dur:90, name:'Standing Spinal Wave',
+    desc:'The spine becomes a living serpent. The wave travels root → crown on inhale, crown → root on exhale. This is the physical mechanism of Kundalini awakening — the serpent energy traveling the Sushumna nadi.',
+    breath:'Inhale as wave travels upward (root → crown) · Exhale as wave travels downward (crown → root) · Breath drives the wave speed — do not rush',
+    bandhas:[{l:'Mula Bandha',c:'bm',n:'Engage at the base as the upward wave begins.'},{l:'Uddiyana — soft',c:'bu',n:'Soften the belly, let it breathe freely.'},{l:'Jalandhara — light',c:'bj',n:'Chin slightly toward throat at the crest of the wave.'}],
+    chakra:{name:'All chakras',col:'#f0a843',note:'Golden wave of light: red → orange → yellow → green → blue → indigo as it passes through each point.'},
+    steps:['Stand with feet hip-width apart, knees soft.','Upward wave: knees bend → pelvis tilts forward → lumbar opens → chest expands → chin lifts → head gently nods forward.','Downward wave (reverse): chin tucks → thoracic rounds → lumbar flexes back → pelvis rocks back → knees soften.','Find a slow, oceanic rhythm.','Breath drives the wave speed — do not rush.'],
+    tip:'The spine must be warmed BEFORE any breath retention or bandha practice. A cold spine going into Nauli risks compression.' },
+
+  { phase:'mob', dur:30, name:'Neck Fascia Spiral',
+    desc:'Interlace fingers behind the head. Natural weight of arms creates gentle traction — do not pull. Rotate in very small, slow spirals. Move through any point of resistance by breathing directly into it.',
+    breath:'Ujjayi throughout — soft ocean sound in the throat · Exhale into every point of resistance',
+    bandhas:[{l:'No bandhas',c:'bn',n:'Let the neck be completely free.'}],
+    chakra:{name:'Vishuddha · Throat',col:'#7bb8e8',note:'Luminous teal sphere opening at the base of the throat. Soft humming deepens vagal activation.'},
+    steps:['Interlace fingers behind the head. Let elbows fall slightly forward.','Natural weight of arms creates gentle cervical traction — do not pull.','Rotate the head in very small, slow spirals — not full neck rolls.','Begin coin-sized spirals, gradually expand to orange-sized.','Exhale directly into any point of resistance or tightness.'],
+    tip:'Decompresses the suboccipital fascia and releases the vagus nerve pathway through the throat.' },
+
+  { phase:'hypo', dur:60, name:'Standing Hypopressive',
+    desc:'Creates negative intra-abdominal pressure. The vacuum lifts the pelvic floor and organs rather than bearing down. KEY: the vacuum creates the lock — not muscular force. This is the fundamental difference from traditional bandha.',
+    breath:'Exhale fully → Apnea: expand ribcage without inhaling (5–8s) → Release: inhale naturally → 2–3 recovery breaths → Repeat ×3',
+    bandhas:[{l:'Mula + Uddiyana',c:'bm',n:'Occur automatically from negative pressure — no conscious contraction needed.'}],
+    chakra:{name:'Svadhisthana · Sacral',col:'#f0a843',note:'Feel the pelvic floor being gently pulled upward by an invisible thread.'},
+    steps:['Stand tall, feet hip-width. Imagine a thread pulling the crown upward. Knees very slightly soft.','Take a normal breath in through the nose.','Exhale fully through the mouth — completely empty the lungs (4–5 seconds).','Close mouth and nose — do not inhale.','Expand ribcage laterally as if taking a huge breath, but do NOT let air in.','Hold 5–8 seconds. Belly draws in and up automatically. Pelvic floor lifts.','Release — let air rush in naturally. 2–3 recovery breaths. Repeat ×3.'],
+    tip:'The vacuum is created by negative pressure, not muscular force. This is the fundamental difference from traditional bandha practice.' },
+
+  { phase:'hypo', dur:60, name:'Squat Hypopressive',
+    desc:'Wide squat opens the pelvic floor even more than standing — making the vacuum effect stronger. Gravity assists the opening, then the vacuum lifts against gravity.',
+    breath:'Same apnea sequence as previous movement. The squat position significantly increases the intensity of the pelvic floor lift.',
+    bandhas:[{l:'Mula + Uddiyana',c:'bm',n:'Automatically stronger in the squat position.'},{l:'Jalandhara — natural',c:'bj',n:'The throat may want to close at the moment of apnea expansion. Allow it.'}],
+    chakra:{name:'Muladhara · Root',col:'#c4203c',note:'Gravity opens the pelvic floor. The vacuum then lifts it against gravity.'},
+    steps:['Wide squat: feet wider than shoulders, toes turned out, heels on floor (or block under heels if needed).','Forearms rest on inner thighs — slight forward lean. Spine long.','Same apnea sequence: exhale → expand ribs without inhaling → hold 5–8s → release naturally.','Repeat ×3.'],
+    tip:'Particularly effective for pelvic floor rehabilitation. Also strengthens the deep core stabilisers before Nauli.' },
+
+  { phase:'hypo', dur:30, name:'Uddiyana Bandha Hold',
+    desc:'The bridge between hypopressive practice and Agni Sara. Same mechanism — now deepened into a classical lock. After two hypopressive rounds, the transition feels effortless.',
+    breath:'Full exhale → Bahya Kumbhaka → hold Uddiyana 5–10s → slowly release → inhale through nose',
+    bandhas:[{l:'Uddiyana Bandha',c:'bu',n:'Full, classical — navel toward spine and up under the floating ribs.'},{l:'Mula Bandha',c:'bm',n:'Held firmly throughout.'}],
+    chakra:{name:'Manipura · Solar Plexus',col:'#e8c428',note:'Golden sun at the navel — the fire you are about to ignite.'},
+    steps:['Stand, feet hip-width. Slight forward lean, hands on thighs.','Exhale completely through the mouth.','Draw the entire belly in and UP — navel to spine, then lift everything under the ribcage.','Hold 5–10 seconds.','Release slowly. Inhale through the nose. Repeat ×3.'],
+    tip:'After the hypopressive rounds, your diaphragm and abdominal cavity already know this sensation. The transition to Agni Sara should feel natural.' },
+
+  { phase:'fire', dur:60, name:'Agni Sara',
+    desc:'Agni Sara — "Essence of Fire." A dynamic extension of Uddiyana Bandha — the same mechanism made rhythmic and rapid. Ignites the digestive fire and activates the solar plexus.',
+    breath:'Full exhale out through mouth → Bahya Kumbhaka → rapid belly pumping during hold → release lock → slow inhale through nose → 2 recovery breaths → repeat',
+    bandhas:[{l:'Mula Bandha',c:'bm',n:'Held firmly throughout the entire pumping phase.'},{l:'Uddiyana — starting position',c:'bu',n:'Begin from the full Uddiyana, then release into dynamic pumping from there.'}],
+    chakra:{name:'Manipura · Solar Plexus',col:'#e8c428',note:'Blazing golden sun spinning at the navel. Each pump fans the flame brighter and hotter.'},
+    steps:['Feet wider than shoulders, knees slightly bent. Palms on mid-thighs. Slight forward lean — spine long, not rounded.','Full inhale through nose, then exhale completely through mouth.','On the retained empty breath (Bahya Kumbhaka): rapidly pump the belly in and out. Navel snaps toward spine (in), then releases forward (out).','Movement from the abdominal wall only — nothing else moves.','Start with 5 pumps per hold, build to 10–15.','Inhale slowly through nose to reset. 2 normal breaths. Repeat 3–4 rounds.'],
+    tip:'Never attempt with a full stomach. Best practiced 2+ hours after eating.' },
+
+  { phase:'fire', dur:90, name:'Nauli Kriya',
+    desc:'The advanced evolution of Agni Sara. Same breath hold — now with isolated muscular control. One of the most powerful techniques in Hatha Yoga. Do not force it — the isolation must be discovered.',
+    breath:'Always on full exhale with Bahya Kumbhaka. NEVER during inhalation or mid-breath. One complete round = one full exhale cycle.',
+    bandhas:[{l:'Uddiyana Bandha',c:'bu',n:'The container and prerequisite — without it Nauli is impossible.'},{l:'Mula Bandha',c:'bm',n:'Engaged throughout.'},{l:'Jalandhara',c:'bj',n:'Chin toward sternum during retention — completes Maha Bandha.'}],
+    chakra:{name:'Manipura + Svadhisthana',col:'#f05a28',note:'Fire meets water: the creative force of the 2nd chakra stoked by the will of the 3rd.'},
+    steps:['Same forward-lean position as Agni Sara.','Full exhale. Establish Uddiyana Bandha (full belly vacuum).','Stage 1 — Madhya Nauli: release only the central strip of rectus abdominis — let it protrude forward while side abdominals stay drawn in. Spend your first weeks here.','Stage 2 — Rolling: shift contraction right (Dakshina) → through center → left (Vama) → back to center. This creates the churning "dancing stomach" motion.','3–5 rotations per exhale cycle. Release ALL locks before inhaling.'],
+    tip:'If you cannot yet isolate the central column, continue with Agni Sara. Nauli cannot be forced — it must be discovered.' },
+
+  { phase:'fire', dur:90, name:'Breath of Fire',
+    desc:'Kapalabhati — "skull shining breath." After Agni Sara and Nauli, the abdominal muscles are perfectly primed. Takes navel point activation and makes it rhythmic and continuous.',
+    breath:'Active sharp exhale (navel snaps in) → passive inhale (navel simply releases). No pause between exhale and inhale. Continuous rhythmic pumping.',
+    bandhas:[{l:'Mula Bandha — light',c:'bm',n:'Maintained continuously throughout the pumping.'},{l:'Maha Bandha',c:'bmh',n:'All 3 locks simultaneously at the END of each round during the hold.'}],
+    chakra:{name:'Root → Sacral → Solar Plexus',col:'#f05a28',note:'On the final Maha Bandha hold, draw accumulated energy consciously up the spine toward the Crown. This is the Kundalini lift.'},
+    steps:['Sit cross-legged or stand. Hands on knees in Chin Mudra (index + thumb touching). Close eyes, focus on the navel point.','Exhale = active sharp snap of the navel toward spine. Inhale = completely passive, navel simply releases.','Start: 1 pump/second. Target: 2 pumps/second. Sound is a sharp "chuh" through the nose on each exhale.','3 rounds × 30 pumps. 3 recovery breaths between rounds.','End of each round: full slow inhale → Maha Bandha (all 3 locks) → hold 5–10 seconds → release → exhale → 3 recovery breaths.'],
+    tip:'Do not force the inhalation — the passive rebound is the entire point. If dizzy, slow the pace.' },
+
+  { phase:'qi', dur:45, name:'Hold Heaven — Bi Tian Shi',
+    desc:'One of the 8 Brocades of Qigong. Distributes energy raised in Phase 4 through the Triple Warmer meridian. Shifts from intense internal fire to expansive, moving meditation.',
+    breath:'Inhale 4 counts as arms rise · Brief hold 1–2s at top · Exhale 5 counts on descent',
+    bandhas:[{l:'Uddiyana — light',c:'bu',n:'At the top of the lift. Release completely on the exhale descent.'}],
+    chakra:{name:'All meridians',col:'#3ecf78',note:'Distributes the energy gathered in the fire phase through the full meridian system.'},
+    steps:['Feet hip-width. Fingers interlaced in front of lower belly, palms facing upward.','Inhale — sweep arms up overhead in wide arc, palms pressing toward sky. Rise onto tiptoes. Lengthen every vertebra.','Brief hold 1–2 seconds at top — feel the full body suspension.','Exhale — release the interlace, let arms float wide and back down. Heels lower.','6 repetitions.'],
+    tip:'One of the Eight Brocades (Ba Duan Jin) — classical Qigong for opening the Triple Warmer meridian.' },
+
+  { phase:'qi', dur:45, name:'Draw the Bow — She Diao Niao',
+    desc:'Horse Stance with lateral bow draw. Opens the Heart and Lung meridians. The "bow string" runs from the extended index finger across the sternum to the opposite elbow.',
+    breath:'Inhale as the bow opens (expansion) · Exhale returning to center (release)',
+    bandhas:[{l:'No bandhas at peak',c:'bn',n:'Chest open and throat naturally lengthened — do not lock anything.'}],
+    chakra:{name:'Anahata + Vishuddha',col:'#3ecf78',note:'Horizontal opening of the chest activates Heart and Throat along the anterior fascial line.'},
+    steps:['Horse Stance: feet wider than shoulders, knees bent ~120°, weight even. Cross both arms loosely in front of chest.','Inhale — extend left arm straight left, index finger pointing up. Pull right elbow sharply back right as if drawing a bowstring. Gaze left.','Feel the full tension of the "bow" across your chest.','Exhale — release both arms back to center.','Repeat to the right. 4 repetitions each side.'],
+    tip:'Keep the Horse Stance deep for full lower body activation.' },
+
+  { phase:'qi', dur:45, name:'Wise Owl Turns',
+    desc:'Slow head rotation with arm sweep behind the back. Stimulates the adrenal glands through the Kidney meridian. The gaze goes as far back as possible.',
+    breath:'Exhale into the turn — minimum 5 counts through the nose · Inhale returning to center',
+    bandhas:[{l:'No bandhas',c:'bn'}],
+    chakra:{name:'Kidney Meridian',col:'#4f8ef7',note:'The back-body rotation stimulates the adrenal glands through the Kidney meridian.'},
+    steps:['Stand tall, feet hip-width, arms at sides.','Exhale — rotate head slowly to the right as far as comfortable, sweep right arm behind the back (hand at left hip). Gaze over right shoulder.','Inhale — return to center.','Repeat to the left. 4 each side.'],
+    tip:'The further back the gaze, the greater the adrenal stimulation. Move slowly — this is not a speed exercise.' },
+
+  { phase:'qi', dur:45, name:'Lifting the Heels — Ding Li',
+    desc:'The percussive heel drop sends a vibration wave up through the heel bones, tibia, femur, and spine — dislodging stagnant energy from the joints. The final grounding seal before yoga.',
+    breath:'Inhale rising · Sharp exhale and heel drop are one simultaneous act',
+    bandhas:[{l:'No bandhas',c:'bn',n:'The shock effect is diminished if you hold any tension. Stay completely relaxed.'}],
+    chakra:{name:'Muladhara · Root',col:'#c4203c',note:'Each heel drop anchors the raised energy into the Root. Visualise roots extending deep into the earth on each drop.'},
+    steps:['Stand tall, feet together.','Inhale — slowly rise onto tiptoes, lengthening the entire body upward. Hold 2 seconds at the top.','Exhale sharply — simultaneously let the heels drop firmly to the floor. Controlled and intentional — not a collapse.','The drop sends a vibration wave upward through all the long bones.','7 repetitions.'],
+    tip:'Each heel drop anchors the raised Kundalini energy into the root before the yoga flow begins.' },
+
+  { phase:'yoga', dur:60, name:'Crescent Moon Lunge',
+    desc:'Opens the psoas fascia — the "muscle of the soul" — which contracts from fear and chronic stress. The line from the grounded back knee to the open throat is one luminous energy channel.',
+    breath:'In the Crescent hold: inhale to lengthen the full anterior fascial line · Exhale to deepen — let gravity increase the backbend · Breathe into the front of the back hip specifically',
+    bandhas:[{l:'Mula Bandha',c:'bm',n:'Stabilises the pelvis and prevents lumbar compression.'},{l:'Uddiyana — soft',c:'bu',n:'Let the belly breathe freely — do not restrict breath here.'}],
+    chakra:{name:'Root → Throat',col:'#7bb8e8',note:'From the grounded back knee (Root) to the open throat to the sky — one luminous energy channel.'},
+    steps:['Begin in Mountain Pose (Tadasana). One conscious breath.','Inhale — sweep arms wide and overhead. Exhale — fold forward (Uttanasana), soften the knees, head hangs.','Inhale — step right foot back into low lunge. Left knee over left ankle. Right knee to floor.','Inhale deeply — sweep both arms overhead, framing the face. Arc the torso gently back into Crescent Moon shape.','Hold for 3 full breaths. Return through the fold and switch sides.'],
+    tip:'The psoas contracts from fear and chronic stress. This is an emotional release as much as a physical one.' },
+
+  { phase:'yoga', dur:90, name:'Plank → Cobra → Down Dog',
+    desc:'The classic spinal journey. Plank activates the full posterior fascial chain. Cobra opens the anterior chain. Down Dog reverses the flow, grounding energy into Root. First true cooling movement after the fire.',
+    breath:'Plank: equal 4:4 Ujjayi · Cobra: inhale fills the chest and lifts · Down Dog: exhale deeply, press the floor away',
+    bandhas:[{l:'Uddiyana in Plank',c:'bu',n:'Navel in and up — essential protection for the lumbar spine.'},{l:'Released in Cobra',c:'bn',n:'Let the navel gently press toward the earth.'},{l:'Uddiyana — light in Down Dog',c:'bu',n:'Softly draw navel toward spine.'}],
+    chakra:{name:'Manipura → Anahata → Vishuddha',col:'#7bb8e8',note:'Cobra activates Solar Plexus → Heart → Throat sequentially. Down Dog reverses the flow into Root.'},
+    steps:['From low lunge: hands to mat, shoulder-width. Step both feet back into Plank. Hold 3 breaths — one straight line from crown to heel. Uddiyana Bandha engaged.','Lower to Chaturanga: elbows bend to 90°, tight to the sides.','Inhale → Cobra: chest sweeps forward and up. Pelvis on floor. Open throat to sky.','Exhale → Down Dog: tuck toes, press palms, lift hips. Inverted V shape.','Pedal heels alternately for 5 breaths. Then hold with both heels pressing down for 5 steady breaths.'],
+    tip:'Down Dog is an inversion — the nervous system calms. This is the first true cooling movement after Kundalini fire.' },
+
+  { phase:'yoga', dur:90, name:'Warrior II → Reverse → Triangle',
+    desc:'Three-pose lateral chain sequence. Warrior II builds heat and stability. Reverse Warrior opens the entire lateral fascial line. Triangle creates a full Root-to-Crown energy circuit in one posture.',
+    breath:'Warrior II: equal 4:4 — the breath of a warrior · Reverse Warrior: inhale deeply into the side ribs · Triangle: long slow exhale on each breath, melting deeper',
+    bandhas:[{l:'Mula Bandha in Warrior',c:'bm',n:'Stabilises the pelvis, prevents the front hip from collapsing.'},{l:'Uddiyana in Triangle',c:'bu',n:'Gently protects the lumbar during lateral flexion.'}],
+    chakra:{name:'Root → Crown',col:'#7bb8e8',note:'Triangle: the complete line from grounded rear foot through the extended upper arm = a full Root to Crown energy circuit.'},
+    steps:['From Down Dog: step right foot forward between hands. Rise into Warrior II.','Warrior II: right knee over right ankle, arms fully horizontal, gaze over right middle finger. Hold 3 breaths.','→ Reverse Warrior: inhale — flip right palm upward, arc right arm up and back. Left hand slides down left leg. Gaze upward. Hold 2 breaths.','→ Triangle: exhale — straighten right leg. Tip torso forward, right hand to shin/ankle/floor. Left arm straight up. Stack both shoulders vertically. Hold 3 breaths.','Return through Warrior II and switch sides.'],
+    tip:'In Reverse Warrior, truly breathe into the left side ribs — the lateral deep fascial line gets its deepest stretch here.' },
+
+  { phase:'cool', dur:90, name:'Sat Kriya',
+    desc:'"SAT" means Truth. "NAM" means Identity. Each SAT-NAM pump drives pranic energy up the Sushumna from Root to Crown. Seals all the energy channels opened during the practice.',
+    breath:'The breath is entirely driven by the mantra. "SAT" creates the exhale. "NAM" creates the inhale. Sound and breath become one.',
+    bandhas:[{l:'Mula Bandha on SAT',c:'bm',n:'Sharp full engagement on every SAT — this is the heart of the practice. Release on every NAM.'},{l:'Maha Bandha — closing',c:'bmh',n:'All 3 locks simultaneously for the 15-second final hold.'}],
+    chakra:{name:'Root → Crown → Aura',col:'#a78bfa',note:'The raised index fingers extend the energy beyond the crown into the electromagnetic field of the aura.'},
+    steps:['Sit on heels — Vajrasana. If uncomfortable: sit cross-legged or on a folded blanket. Sit very tall.','Interlace all fingers except the index fingers — which extend straight upward together (Jupiter Mudra). Arms overhead, hugging the ears. Elbows locked.','Chant "SAT" — simultaneously snap the navel toward the spine AND fully engage Mula Bandha. This creates a micro-exhale through the nose.','Chant "NAM" — release navel and Mula Bandha. Natural micro-inhale follows.','Rhythm: 1 complete SAT-NAM per second. Continue for 90 seconds.','Closing: full deep inhalation → Maha Bandha (all 3 locks) → hold 15 seconds → release slowly → exhale → sit quietly for 5 breaths.'],
+    tip:'Sat Kriya seals the energy channels opened during the practice. Placing it LAST is correct — doing it before the yoga flow would have sent energy inward prematurely.' },
+
+  { phase:'cool', dur:75, name:'Savasana / Child\'s Pose',
+    desc:'Do not skip this. Without Savasana, 50–70% of the effects of the practice are lost. The integration that happens here cannot happen while you are moving. This rest is a required physiological process — not a reward.',
+    breath:'Completely natural and unguided. Simply observe the breath that arises. Do not direct it, count it, or modify it in any way. The body breathes itself.',
+    bandhas:[{l:'All bandhas fully released',c:'bn',n:'Total surrender. This release is as important as every contraction that preceded it.'}],
+    chakra:{name:'All 7 chakras',col:'#a78bfa',note:'In stillness, sense all seven chakras aligned from base of spine to crown. Simply witness. You are the Sushumna nadi made flesh.'},
+    steps:['Option A — Savasana: lie flat on back. Feet fall naturally outward. Arms at ~30° from body, palms up. Eyes closed. Every muscle releases completely.','Option B — Child\'s Pose: sit back on heels, fold torso forward, forehead on floor. Choose this if energy feels uncomfortable in the head after Sat Kriya.','Let the entire body become heavy. Nothing is held. The body breathes itself.'],
+    tip:'This is a required physiological and energetic process. The integration that happens here cannot happen while you are moving.' },
 ];
 
-let currentIdx = 0;
-let timeLeft = SEQ[0].dur;
-let isRunning = true;
-let isPaused = false;
-let interval = null;
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+const TOTAL = SEQ.reduce((s,m)=>s+m.dur,0);
 
-// TTS Female Voice
+// precompute cumulative start times for each move
+const STARTS = SEQ.reduce((acc,m,i)=>{
+  acc.push(i===0 ? 0 : acc[i-1]+SEQ[i-1].dur); return acc;
+},[]);
+
+let S = {
+  running:false, paused:false,
+  idx:0, timeLeft:0,
+  iid:null, soundOn:true,
+};
+
+// elapsed = STARTS[idx] + (SEQ[idx].dur - timeLeft)
+function getElapsed() {
+  return STARTS[S.idx] + (SEQ[S.idx].dur - S.timeLeft);
+}
+
+// ═══════════════════════════════════════════
+// WAKE LOCK
+// ═══════════════════════════════════════════
+let wkSentinel = null;
+async function wkReq() {
+  if ('wakeLock' in navigator) {
+    try { wkSentinel = await navigator.wakeLock.request('screen'); return; } catch(e){}
+  }
+  try { await document.getElementById('wv').play(); } catch(e){}
+}
+function wkRel() {
+  if (wkSentinel) { wkSentinel.release().catch(()=>{}); wkSentinel=null; }
+  try { document.getElementById('wv').pause(); } catch(e){}
+}
+document.addEventListener('visibilitychange', async ()=>{
+  if (document.visibilityState==='visible' && S.running && !S.paused) await wkReq();
+});
+
+// ═══════════════════════════════════════════
+// TTS — speak movement name with female voice
+// ═══════════════════════════════════════════
 function speak(text) {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.95;
-        utterance.pitch = 1.08;
-        utterance.lang = 'en-US';
-        window.speechSynthesis.speak(utterance);
-    }
+  if (!S.soundOn) return;
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.9; 
+  u.pitch = 1.05; 
+  u.volume = 1;
+  u.lang = 'en-US';
+
+  const voices = window.speechSynthesis.getVoices();
+  // Target best Apple/Google Female voices
+  const femaleKeywords = ['female', 'woman', 'samantha', 'siri', 'karen', 'victoria', 'tessa'];
+  const female = voices.find(v => femaleKeywords.some(k => v.name.toLowerCase().includes(k)) && v.lang.startsWith('en'));
+  const anyEn = voices.find(v => v.lang.startsWith('en'));
+  
+  u.voice = female || anyEn || null;
+  window.speechSynthesis.speak(u);
 }
 
-// Render
+// Force voices to load early
+function loadVoices() {
+  if (window.speechSynthesis.getVoices().length === 0) {
+    window.speechSynthesis.onvoiceschanged = ()=>{ window.speechSynthesis.getVoices(); };
+  }
+}
+
+// ═══════════════════════════════════════════
+// AUDIO beeps
+// ═══════════════════════════════════════════
+let ac = null;
+function ensureAC() { if (!ac) ac = new (window.AudioContext||window.webkitAudioContext)(); }
+function beep(f=880,d=0.12,v=0.28) {
+  if (!S.soundOn) return;
+  try {
+    ensureAC(); if (ac.state==='suspended') ac.resume();
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.frequency.value=f;
+    g.gain.setValueAtTime(v,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+d);
+    o.start(); o.stop(ac.currentTime+d);
+  } catch(e){}
+}
+const bNext = ()=>{ beep(750,.09); setTimeout(()=>beep(900,.11),120); };
+const bEnd  = ()=>{ beep(400,.1); setTimeout(()=>beep(520,.1),150); setTimeout(()=>beep(640,.22),310); };
+const bTick = ()=>{ beep(1200,.05,.1); };
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function fmt(s){ const m=Math.floor(s/60),sec=Math.floor(s%60); return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; }
+function $(id){ return document.getElementById(id); }
+function flash(){ const e=$('flash'); e.classList.remove('on'); void e.offsetWidth; e.classList.add('on'); }
+
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
 function render() {
-    const m = SEQ[currentIdx];
-    
-    document.getElementById('move-name').textContent = m.name;
-    document.getElementById('big-time').textContent = `${String(Math.floor(timeLeft/60)).padStart(2,'0')}:${String(timeLeft%60).padStart(2,'0')}`;
-    
-    // Progress ring
-    const progress = document.getElementById('ring-progress');
-    const circumference = 678;
-    progress.style.strokeDashoffset = circumference * (timeLeft / m.dur);
+  const m  = SEQ[S.idx];
+  const ph = PHASES[m.phase];
+  const nxt = S.idx < SEQ.length-1 ? SEQ[S.idx+1] : null;
 
-    // Steps
-    let stepsHTML = '';
-    m.steps.forEach((step,i) => {
-        stepsHTML += `<li><span class="sn">${i+1}</span>${step}</li>`;
-    });
-    document.getElementById('steps-list').innerHTML = stepsHTML;
+  $('phase-dot').style.background = ph.col;
+  $('phase-lbl').textContent = ph.emoji + '  ' + ph.lbl;
+  $('move-ctr').textContent  = (S.idx+1) + ' / ' + SEQ.length;
+  $('move-name').textContent = m.name;
+  $('ring-arc').style.stroke = ph.col;
+  $('desc-txt').textContent  = m.desc;
+  $('breath-ln').textContent = '↳  ' + m.breath;
+  $('next-nm').textContent   = nxt ? nxt.name + '  ·  ' + nxt.dur + 's' : '— End of Practice';
 
-    // Chakra
-    document.getElementById('chakra-info').innerHTML = `
-        <span style="color:${m.chakra.col}; font-size:18px;">●</span> 
-        <strong>${m.chakra.name}</strong> — ${m.chakra.note}
-    `;
+  // bandhas
+  $('bandha-row').innerHTML = m.bandhas.map(b=>`<span class="btag ${b.c}">${b.l}</span>`).join('');
 
-    speak(m.name); // صداگذاری هر حرکت
+  // scroll content
+  const steps = m.steps.map((s,i)=>`<li><span class="sn">${i+1}</span>${s}</li>`).join('');
+  const tip   = m.tip ? `<div class="sec-lbl">Tip</div><div class="tip-box">${m.tip}</div>` : '';
+  $('scroll-content').innerHTML = `
+    <div class="sec-lbl">How to perform</div>
+    <ul class="steps">${steps}</ul>
+    <div class="sec-lbl">Chakra</div>
+    <div class="chakra-row">
+      <div class="chakra-dot" style="background:${m.chakra.col}"></div>
+      <div class="chakra-body"><span class="chakra-nm">${m.chakra.name}</span> — ${m.chakra.note}</div>
+    </div>
+    ${tip}
+    <div style="height:12px"></div>
+  `;
+  $('scroll-area').scrollTop = 0;
+  updateTimers();
 }
 
-// Timer
-function tick() {
-    if (isPaused || !isRunning) return;
-    timeLeft--;
-    if (timeLeft <= 0) {
-        nextMove();
-    } else {
-        render();
-    }
+function updateTimers() {
+  const m   = SEQ[S.idx];
+  const t   = S.timeLeft;
+  const el  = getElapsed();
+  const rem = Math.max(0, TOTAL - el);
+
+  // big timer
+  const bt = $('big-time');
+  bt.textContent = fmt(t);
+  bt.className = (t<=5 && S.running) ? 'urgent' : '';
+
+  // ring arc
+  const circ = 628.3;
+  $('ring-arc').style.strokeDashoffset = circ * (1 - t/m.dur);
+
+  // total bar synced with skips
+  $('prog-fill').style.width = (el/TOTAL*100) + '%';
+  $('prog-elapsed').textContent = fmt(el);
+  $('prog-remain').textContent  = fmt(rem);
 }
 
+// ═══════════════════════════════════════════
+// CONTROLS
+// ═══════════════════════════════════════════
 function startRitual() {
-    if (interval) clearInterval(interval);
-    interval = setInterval(tick, 1000);
-    render();
+  ensureAC(); loadVoices();
+  S.idx=0; S.timeLeft=SEQ[0].dur;
+  S.running=true; S.paused=false;
+  $('idle').classList.add('hidden');
+  $('complete').classList.add('hidden');
+  render();
+  S.iid = setInterval(tick, 1000);
+  wkReq();
+  // Call speak immediately on user interaction to bypass iOS block
+  speak(SEQ[0].name);
+  $('pp-btn').textContent='⏸';
 }
 
-function nextMove() {
-    currentIdx = (currentIdx + 1) % SEQ.length;
-    timeLeft = SEQ[currentIdx].dur;
-    render();
+function tick() {
+  if (S.paused) return;
+  S.timeLeft--;
+  if (S.timeLeft<=3 && S.timeLeft>0) bTick();
+  updateTimers();
+  if (S.timeLeft<=0) advance();
 }
 
-function prevMove() {
-    currentIdx = currentIdx > 0 ? currentIdx - 1 : 0;
-    timeLeft = SEQ[currentIdx].dur;
-    render();
+function advance() {
+  if (S.idx >= SEQ.length-1) { finish(); return; }
+  flash(); bNext();
+  S.idx++;
+  S.timeLeft = SEQ[S.idx].dur;
+  render();
+  speak(SEQ[S.idx].name);
+}
+
+function finish() {
+  clearInterval(S.iid); S.running=false;
+  wkRel(); bEnd();
+  speak('Practice complete. Well done.');
+  $('complete').classList.remove('hidden');
 }
 
 function togglePause() {
-    isPaused = !isPaused;
-    document.getElementById('pp-btn').textContent = isPaused ? '▶' : '⏸';
-}
-
-function skipAdd() {
-    timeLeft = Math.min(SEQ[currentIdx].dur, timeLeft + 15);
-    render();
+  ensureAC();
+  if (!S.running) return;
+  S.paused = !S.paused;
+  $('pp-btn').textContent = S.paused ? '▶' : '⏸';
+  if (!S.paused) { wkReq(); beep(700,.08); }
+  else           { wkRel();  beep(440,.1); }
 }
 
 function stopRitual() {
-    clearInterval(interval);
-    isRunning = false;
-    alert("تمرین متوقف شد");
+  clearInterval(S.iid); S.running=false; S.paused=false;
+  wkRel(); beep(300,.2,.2);
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  $('idle').classList.remove('hidden');
+  $('pp-btn').textContent='▶';
 }
 
-// Start
-window.onload = () => {
-    render();
-    startRitual();
-};
+function nextMove() {
+  ensureAC();
+  if (!S.running) return;
+  if (S.idx >= SEQ.length-1) { finish(); return; }
+  flash(); bNext();
+  S.idx++; 
+  S.timeLeft = SEQ[S.idx].dur;
+  render();
+  speak(SEQ[S.idx].name);
+}
+
+function prevMove() {
+  ensureAC();
+  if (!S.running || S.idx<=0) return;
+  flash(); beep(550,.1);
+  S.idx--; 
+  S.timeLeft = SEQ[S.idx].dur;
+  render();
+  speak(SEQ[S.idx].name);
+}
+
+function skipAdd() {
+  if (!S.running) return;
+  S.timeLeft = Math.min(SEQ[S.idx].dur, S.timeLeft + 15);
+  updateTimers();
+}
+
+function toggleSound() {
+  S.soundOn = !S.soundOn;
+  $('snd-btn').textContent = S.soundOn ? '🔔' : '🔕';
+}
+
+function restartRitual() {
+  $('complete').classList.add('hidden');
+  startRitual();
+}
+
+// Init
+render();
 </script>
 </body>
 </html>
