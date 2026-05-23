@@ -41,13 +41,12 @@ top: 0; left: 0;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SAFE AREA — Dynamic Island / notch aware
+SAFE AREA — set via JS on load for reliability
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 :root {
-–sat: env(safe-area-inset-top, 47px);
-–sar: env(safe-area-inset-right, 0px);
-–sab: env(safe-area-inset-bottom, 34px);
-–sal: env(safe-area-inset-left, 0px);
+/* JS will override these via inline style on <html> */
+–sat: 59px;   /* iPhone 15 Pro Dynamic Island default */
+–sab: 34px;   /* iPhone home indicator default */
 
 –bg:      #0d0f14;
 –bg2:     #131720;
@@ -60,8 +59,8 @@ SAFE AREA — Dynamic Island / notch aware
 –green:   #3ecf78;
 –purple:  #a78bfa;
 
-–topbar-h: calc(var(–sat) + 48px);
-–ctrl-h:   calc(var(–sab) + 88px);
+–topbar-h: calc(var(–sat) + 44px);
+–ctrl-h:   calc(var(–sab) + 86px);
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -219,7 +218,7 @@ line-height: 1;
 #phase-row {
 display: flex; align-items: center;
 justify-content: space-between;
-padding: 4px 22px 2px;
+padding: 2px 22px 0px;
 flex-shrink: 0;
 }
 #phase-pill { display: flex; align-items: center; gap: 7px; }
@@ -235,7 +234,7 @@ letter-spacing: 0.5px;
 }
 
 #move-name {
-padding: 4px 22px 0;
+padding: 2px 22px 0;
 font-size: 23px; font-weight: 800;
 color: var(–text);
 line-height: 1.15; letter-spacing: -0.4px;
@@ -246,7 +245,7 @@ flex-shrink: 0;
 /* ── TIMER RING ── */
 #timer-wrap {
 display: flex; align-items: center; justify-content: center;
-padding: 8px 0 4px;
+padding: 4px 0 2px;
 position: relative;
 flex-shrink: 0;
 }
@@ -262,19 +261,18 @@ fill: none; stroke-width: 3; stroke-linecap: round;
 transition: stroke-dashoffset 0.95s linear, stroke 0.4s ease;
 }
 #big-time {
-font-size: 78px; font-weight: 800;
+font-size: 72px; font-weight: 800;
 color: var(–text);
 font-variant-numeric: tabular-nums;
 letter-spacing: -4px; line-height: 1;
 position: relative; z-index: 1;
 transition: color 0.3s;
-/* SF Pro / system monospaced digits */
 font-feature-settings: “tnum”;
 }
 #big-time.urgent { color: var(–fire); }
 
 /* ── DESCRIPTION ── */
-#desc-area { padding: 6px 22px 0; flex-shrink: 0; }
+#desc-area { padding: 4px 22px 0; flex-shrink: 0; }
 #desc-txt {
 font-size: 13px; color: var(–text2);
 line-height: 1.65;
@@ -292,7 +290,7 @@ color: var(–accent); line-height: 1.5;
 /* ── NEXT ── */
 #next-row {
 display: flex; align-items: center; gap: 8px;
-padding: 6px 22px 0;
+padding: 4px 22px 0;
 flex-shrink: 0;
 }
 #next-lbl {
@@ -305,7 +303,7 @@ font-weight: 600; white-space: nowrap;
 /* ── BANDHAS ── */
 #bandha-row {
 display: flex; flex-wrap: wrap; gap: 6px;
-padding: 6px 22px 0;
+padding: 4px 22px 0;
 flex-shrink: 0;
 }
 .btag {
@@ -324,10 +322,9 @@ letter-spacing: 0.3px;
 flex: 1;
 overflow-y: auto; overflow-x: hidden;
 -webkit-overflow-scrolling: touch;
-padding: 10px 22px 8px;
-/* fade top edge */
--webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18px, black 100%);
-mask-image: linear-gradient(to bottom, transparent 0%, black 18px, black 100%);
+padding: 6px 22px 6px;
+-webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 14px, black 100%);
+mask-image: linear-gradient(to bottom, transparent 0%, black 14px, black 100%);
 }
 #scroll-area::-webkit-scrollbar { display: none; }
 
@@ -388,8 +385,8 @@ bottom: 0; left: 0; right: 0;
 height: var(–ctrl-h);
 display: flex; flex-direction: column;
 justify-content: flex-start;
-padding: 8px 22px calc(var(–sab) + 8px);
-background: linear-gradient(to top, #0d0f14 60%, transparent 100%);
+padding: 6px 22px calc(var(–sab) + 6px);
+background: linear-gradient(to top, #0d0f14 65%, transparent 100%);
 z-index: 100;
 }
 
@@ -520,7 +517,7 @@ color: var(–text2);
   <!-- big countdown ring -->
 
   <div id="timer-wrap">
-    <svg id="ring-svg" width="210" height="210" viewBox="0 0 210 210">
+    <svg id="ring-svg" width="195" height="195" viewBox="0 0 210 210">
       <circle class="r-bg" cx="105" cy="105" r="96"/>
       <circle id="ring-arc" class="r-fg"
         cx="105" cy="105" r="96"
@@ -575,6 +572,42 @@ color: var(–text2);
 </div>
 
 <script>
+// ═══════════════════════════════════════════════
+// SAFE AREA DETECTION
+// Reads the real CSS env() values via a probe div,
+// then writes them back as custom properties on <html>.
+// Works in both Safari browser mode and PWA fullscreen.
+// ═══════════════════════════════════════════════
+(function applySafeArea() {
+  // Create an invisible probe element
+  const probe = document.createElement('div');
+  probe.style.cssText = [
+    'position:fixed', 'top:0', 'left:0',
+    'width:1px', 'height:1px',
+    'pointer-events:none', 'visibility:hidden',
+    'padding-top:env(safe-area-inset-top,0px)',
+    'padding-bottom:env(safe-area-inset-bottom,0px)'
+  ].join(';');
+  document.documentElement.appendChild(probe);
+
+  const cs  = window.getComputedStyle(probe);
+  const sat = parseInt(cs.paddingTop,  10) || 0;
+  const sab = parseInt(cs.paddingBottom, 10) || 0;
+
+  document.documentElement.removeChild(probe);
+
+  // iPhone 15 Pro: Dynamic Island = 59px, home bar = 34px
+  // If env() returned 0 (browser mode without fullscreen), use sensible fallbacks
+  const finalSat = sat > 0 ? sat : 59;
+  const finalSab = sab > 0 ? sab : 34;
+
+  const root = document.documentElement;
+  root.style.setProperty('--sat', finalSat + 'px');
+  root.style.setProperty('--sab', finalSab + 'px');
+  root.style.setProperty('--topbar-h', `calc(${finalSat}px + 44px)`);
+  root.style.setProperty('--ctrl-h',   `calc(${finalSab}px + 86px)`);
+})();
+
 // ═══════════════════════════════════════════════
 // REGISTER SERVICE WORKER
 // ═══════════════════════════════════════════════
