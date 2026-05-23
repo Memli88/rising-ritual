@@ -1,4 +1,4 @@
-const CACHE = 'rising-ritual-v1.1';
+const CACHE = 'rising-ritual-v2';
 const ASSETS = [
   './',
   './index.html'
