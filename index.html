@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  /* متای ویوپورت زیر برای جلوگیری از زوم ناخواسته در موبایل بسیار مهم است */
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Morning Kriya Reset</title>
   
@@ -247,6 +246,45 @@
     </footer>
 
   </div>
+<script>
+    // --- منطق تایمر و کنترل‌ها ---
+    let timeLeft = 58; // زمان شروع بر اساس تصویر شما
+    let timerId = null;
+    const timerDisplay = document.querySelector('.timer-display');
+    const playPauseBtn = document.querySelector('.play-pause');
+
+    function updateDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function toggleTimer() {
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+            playPauseBtn.textContent = '▶'; // نمایش آیکون پلی هنگام توقف
+        } else {
+            playPauseBtn.textContent = '⏸'; // نمایش آیکون پوز هنگام حرکت
+            timerId = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
+                } else {
+                    clearInterval(timerId);
+                    timerId = null;
+                    alert("تمرین به پایان رسید!");
+                }
+            }, 1000);
+        }
+    }
+
+    // اتصال دکمه به تابع
+    playPauseBtn.addEventListener('click', toggleTimer);
+
+    // مقداردهی اولیه نمایش
+    updateDisplay();
+</script>
 
 </body>
 </html>
