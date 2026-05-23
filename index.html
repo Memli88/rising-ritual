@@ -1,354 +1,338 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Morning Kriya">
   <title>Morning Kriya Reset</title>
-  
   <style>
-    /* =========================================
-       Base Reset & Typography
-       ========================================= */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent; /* حذف چشمک زدن هنگام لمس دکمه‌ها در موبایل */
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-    body {
-      background-color: #0b0f19; /* رنگ پس‌زمینه بسیار تیره */
-      color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow: hidden;
-    }
+```
+body {
+  background-color: #0b0f19;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
 
-    .app-wrapper {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      width: 100vw;
-    }
+.app-wrapper { display: flex; flex-direction: column; height: 100dvh; width: 100vw; }
 
-    /* =========================================
-       1. Top Header Section (Fixed, Compact)
-       ========================================= */
-    .top-header {
-      flex: 0 0 auto;
-      padding: 20px 20px 5px 20px; /* پدینگ پایین کمتر شده است */
-      text-align: center;
-    }
+/* ── Header ── */
+.top-header { flex: 0 0 auto; padding: 20px 20px 5px; text-align: center; }
 
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      color: #8a93a5;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-bottom: 15px;
-    }
+.status-bar {
+  display: flex; justify-content: space-between;
+  font-size: 0.75rem; color: #8a93a5;
+  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px;
+}
 
-    .movement-title {
-      font-size: 1.7rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      margin-bottom: 5px; /* فاصله بسیار کم با تایمر */
-    }
+.movement-title { font-size: 1.7rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 5px; }
 
-    .timer-display {
-      font-size: 5.5rem; /* فونت بزرگتر برای جبران حذف دایره */
-      font-weight: 700;
-      line-height: 1;
-      letter-spacing: -2px;
-      margin: 0; /* حذف فاصله‌های اضافی دور تایمر */
-    }
+.timer-display {
+  font-size: 5.5rem; font-weight: 700;
+  line-height: 1; letter-spacing: -2px; margin: 0;
+}
 
-    /* =========================================
-       2. Middle Content Section (Scrollable with Panels)
-       ========================================= */
-    .scrollable-content {
-      flex: 1 1 auto;
-      min-height: 0;
-      overflow-y: auto;
-      padding: 10px 20px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px; /* فاصله بین کادرهای تیره */
-    }
+/* ── Scrollable ── */
+.scrollable-content {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  padding: 10px 20px 20px; display: flex; flex-direction: column; gap: 15px;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.scrollable-content::-webkit-scrollbar { display: none; }
 
-    .scrollable-content::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollable-content {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
+.content-box {
+  background-color: #131927; border: 1px solid #1f293d;
+  border-radius: 16px; padding: 18px;
+}
 
-    /* کادرهای تیره (Panels) */
-    .content-box {
-      background-color: #131927; /* رنگی کمی روشن‌تر از پس‌زمینه اصلی */
-      border: 1px solid #1f293d; /* حاشیه بسیار ظریف */
-      border-radius: 16px;
-      padding: 18px;
-    }
+.instructions-text { font-size: 1.05rem; line-height: 1.5; color: #d1d5db; margin-bottom: 15px; }
 
-    .instructions-text {
-      font-size: 1.05rem;
-      line-height: 1.5;
-      color: #d1d5db;
-      margin-bottom: 15px;
-    }
+.bandha-tag {
+  display: inline-block;
+  background-color: rgba(255,139,139,0.1); color: #ff8b8b;
+  padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
+  border: 1px solid rgba(255,139,139,0.3);
+}
 
-    .bandha-tag {
-      display: inline-block;
-      background-color: rgba(255, 139, 139, 0.1);
-      color: #ff8b8b;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      border: 1px solid rgba(255, 139, 139, 0.3);
-    }
+.section-title {
+  font-size: 0.8rem; color: #8a93a5; letter-spacing: 1.5px;
+  text-transform: uppercase; margin-bottom: 15px; font-weight: 600;
+}
 
-    .section-title {
-      font-size: 0.8rem;
-      color: #8a93a5;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 15px;
-      font-weight: 600;
-    }
+.instruction-list { list-style-type: none; counter-reset: custom-counter; }
+.instruction-list li {
+  counter-increment: custom-counter; margin-bottom: 12px;
+  font-size: 0.95rem; line-height: 1.4; color: #b0b8c9; display: flex;
+}
+.instruction-list li::before {
+  content: counter(custom-counter) ".";
+  color: #fff; font-weight: bold; margin-right: 10px; min-width: 15px;
+}
 
-    .instruction-list {
-      list-style-type: none; /* حذف اعداد پیش‌فرض */
-      counter-reset: custom-counter;
-    }
+/* ── Bottom Player ── */
+.bottom-player {
+  flex: 0 0 auto; padding: 15px 20px;
+  padding-bottom: calc(15px + env(safe-area-inset-bottom));
+  background-color: #0b0f19;
+}
 
-    .instruction-list li {
-      counter-increment: custom-counter;
-      margin-bottom: 12px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      color: #b0b8c9;
-      display: flex;
-    }
+.progress-bar-container {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 15px; font-size: 0.8rem; color: #6b7280;
+}
 
-    .instruction-list li::before {
-      content: counter(custom-counter) ".";
-      color: #ffffff;
-      font-weight: bold;
-      margin-right: 10px;
-      min-width: 15px;
-    }
+.progress-bar {
+  flex-grow: 1; height: 4px; background-color: #1f293d;
+  border-radius: 2px; position: relative; overflow: hidden;
+}
 
-    /* =========================================
-       3. Bottom Player Section (Fixed)
-       ========================================= */
-    .bottom-player {
-      flex: 0 0 auto;
-      padding: 15px 20px;
-      padding-bottom: calc(15px + env(safe-area-inset-bottom));
-      background-color: #0b0f19; /* همرنگ بدنه */
-    }
+.progress-fill {
+  position: absolute; left: 0; top: 0; height: 100%;
+  background-color: #6366f1; width: 0%; border-radius: 2px;
+  transition: width 1s linear;
+}
 
-    .progress-bar-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 15px;
-      font-size: 0.8rem;
-      color: #6b7280;
-    }
+.controls { display: flex; justify-content: center; align-items: center; gap: 14px; }
 
-    .progress-bar {
-      flex-grow: 1;
-      height: 4px;
-      background-color: #1f293d;
-      border-radius: 2px;
-      position: relative;
-      overflow: hidden;
-    }
+.control-btn {
+  background-color: #131927; border: none; color: #9ca3af;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  width: 45px; height: 45px; border-radius: 50%; transition: all 0.2s;
+}
+.control-btn:active { transform: scale(0.88); }
 
-    .progress-fill {
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      background-color: #6366f1;
-      width: 0%; /* توسط جاوااسکریپت پر می‌شود */
-      border-radius: 2px;
-      transition: width 1s linear;
-    }
+.control-btn.play-pause {
+  width: 65px; height: 65px;
+  background-color: #3b82f6; color: white; font-size: 1.8rem;
+  box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+}
 
-    .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-    }
+.control-btn.reset-btn {
+  background-color: #1f293d; color: #f87171;
+  font-size: 1rem; font-weight: 700; letter-spacing: -0.5px;
+}
 
-    .control-btn {
-      background: none;
-      border: none;
-      color: #9ca3af;
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background-color: #131927;
-      transition: all 0.2s;
-    }
-    
-    .control-btn:active {
-      transform: scale(0.9);
-    }
+.skip-label { font-size: 0.78rem; font-weight: 700; }
+```
 
-    .control-btn.play-pause {
-      width: 65px;
-      height: 65px;
-      background-color: #3b82f6;
-      color: white;
-      font-size: 1.8rem;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-    }
   </style>
 </head>
 <body>
+<div class="app-wrapper">
 
-  <div class="app-wrapper">
-    
-    <header class="top-header">
-      <div class="status-bar">
-        <span>Warm-Up</span>
-        <span>1 / 20</span>
-      </div>
-      <h1 class="movement-title">Root Stomp & Bounce</h1>
-      <div class="timer-display" id="main-timer">00:58</div>
-    </header>
+  <header class="top-header">
+    <div class="status-bar">
+      <span id="phase-label">Warm-Up</span>
+      <span id="step-counter">1 / 20</span>
+    </div>
+    <h1 class="movement-title" id="movement-title">Root Stomp &amp; Bounce</h1>
+    <div class="timer-display" id="main-timer">01:00</div>
+  </header>
 
-    <main class="scrollable-content">
-      
-      <div class="content-box">
-        <p class="instructions-text">
-          Stand barefoot. Bounce gently from both knees — heels barely leave the ground. Arms hang completely loose. After 20s add a soft heel-stomp on each downbeat.
-        </p>
-        <div class="bandha-tag">Mula Bandha — light</div>
-      </div>
+  <main class="scrollable-content">
+    <div class="content-box">
+      <p class="instructions-text" id="instructions-text"></p>
+      <div class="bandha-tag" id="bandha-tag"></div>
+    </div>
+    <div class="content-box">
+      <div class="section-title">How to perform</div>
+      <ol class="instruction-list" id="instruction-list"></ol>
+    </div>
+  </main>
 
-      <div class="content-box">
-        <div class="section-title">How to perform</div>
-        <ol class="instruction-list">
-          <li>Stand barefoot on the floor.</li>
-          <li>Bounce gently from both knees — heels barely leave the ground.</li>
-          <li>Let arms hang completely loose and shake naturally.</li>
-          <li>After 20 seconds, add a soft heel-stomp on each downbeat.</li>
-          <li>Keep the whole body soft — jaw relaxed, shoulders dropped.</li>
-        </ol>
-      </div>
-      
-    </main>
+  <footer class="bottom-player">
+    <div class="progress-bar-container">
+      <span id="progress-elapsed">00:00</span>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <span id="progress-total">00:00</span>
+    </div>
+    <div class="controls">
+      <button class="control-btn" id="prev-btn">⏮</button>
+      <button class="control-btn play-pause" id="play-pause-btn">⏸</button>
+      <button class="control-btn" id="next-btn">⏭</button>
+      <button class="control-btn skip-label" id="skip15-btn">+15</button>
+      <button class="control-btn reset-btn" id="reset-btn" title="Reset">↺</button>
+    </div>
+  </footer>
 
-    <footer class="bottom-player">
-      <div class="progress-bar-container">
-        <span id="progress-start">00:00</span>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill"></div>
-        </div>
-        <span id="progress-end">21:13</span>
-      </div>
-      
-      <div class="controls">
-        <button class="control-btn">⏮</button>
-        <button class="control-btn play-pause" id="play-pause-btn">⏸</button>
-        <button class="control-btn">⏭</button>
-        <button class="control-btn">+15</button>
-      </div>
-    </footer>
+</div>
+<script>
+// ── Session Data ────────────────────────────────────────────────────────────
+const SESSION = [
+  {
+    title: "Root Stomp & Bounce", phase: "Warm-Up", duration: 60,
+    instructions: "Stand barefoot. Bounce gently from both knees — heels barely leave the ground. Arms hang completely loose. After 20s add a soft heel-stomp on each downbeat.",
+    steps: ["Stand barefoot on the floor.", "Bounce gently from both knees — heels barely leave the ground.", "Let arms hang completely loose and shake naturally.", "After 20 seconds, add a soft heel-stomp on each downbeat.", "Keep the whole body soft — jaw relaxed, shoulders dropped."],
+    bandha: "Mula Bandha — light"
+  },
+  {
+    title: "Spinal Rock", phase: "Warm-Up", duration: 60,
+    instructions: "Sit cross-legged. Rock forward and back on your sit bones with each breath. Let the movement flow from the base of the spine.",
+    steps: ["Sit comfortably cross-legged.", "Inhale and rock forward, lengthening the spine.", "Exhale and rock back gently.", "Keep the rhythm steady with your breath.", "Allow the movement to become fluid and natural."],
+    bandha: "Mula Bandha — light"
+  },
+  {
+    title: "Breath of Fire", phase: "Pranayama", duration: 120,
+    instructions: "Rapid rhythmic breathing through the nose. Equal inhale and exhale. Navel pumps in on each exhale. Start slow, build speed.",
+    steps: ["Sit tall in easy pose.", "Begin slow rhythmic nasal breathing.", "Navel pulls in sharply on each exhale.", "Gradually increase the pace.", "Keep the breath equal and steady."],
+    bandha: "Uddiyana Bandha — engaged"
+  },
+  {
+    title: "Ego Eradicator", phase: "Kriya", duration: 180,
+    instructions: "Arms up at 60°, fingertips curled to pads. Breath of Fire. Feel the energy rise up the spine and radiate through the fingertips.",
+    steps: ["Raise arms to 60° from horizontal.", "Curl fingers onto finger pads, thumbs up.", "Begin Breath of Fire.", "Hold the posture steady.", "Inhale, bring thumbs together overhead, exhale and release."],
+    bandha: "Mula Bandha — strong"
+  },
+  {
+    title: "Sat Kriya", phase: "Kriya", duration: 180,
+    instructions: "Sit on heels, arms overhead, palms together. Chant SAT as you pump the navel. NAM as you release. Rhythmic and continuous.",
+    steps: ["Sit on heels, spine tall.", "Interlace fingers, extend index fingers up.", "Chant SAT — pump navel in.", "Chant NAM — release navel.", "Maintain the rhythm for the full duration."],
+    bandha: "Mula Bandha — rhythmic"
+  }
+];
 
-  </div>
+const TOTAL_SESSION_SECONDS = SESSION.reduce((a, m) => a + m.duration, 0);
+const TOTAL_STEPS = SESSION.length;
 
-  <script>
-    // تنظیمات اولیه
-    let totalSeconds = 58; // زمان شروع حرکت
-    let currentSeconds = totalSeconds;
-    let timerInterval = null;
-    let isPlaying = true; // فرض می‌کنیم برنامه در حال پخش است
+// ── State ───────────────────────────────────────────────────────────────────
+let idx = 0;
+let moveRemaining = 0;
+let sessionElapsed = 0;
+let isPlaying = true;
+let ticker = null;
 
-    // المان‌های DOM
-    const timerDisplay = document.getElementById('main-timer');
-    const playPauseBtn = document.getElementById('play-pause-btn');
-    const progressFill = document.getElementById('progress-fill');
-    const progressStartText = document.getElementById('progress-start');
+// ── DOM ─────────────────────────────────────────────────────────────────────
+const $timer    = document.getElementById(‘main-timer’);
+const $ppBtn    = document.getElementById(‘play-pause-btn’);
+const $fill     = document.getElementById(‘progress-fill’);
+const $elapsed  = document.getElementById(‘progress-elapsed’);
+const $total    = document.getElementById(‘progress-total’);
+const $phase    = document.getElementById(‘phase-label’);
+const $step     = document.getElementById(‘step-counter’);
+const $title    = document.getElementById(‘movement-title’);
+const $instr    = document.getElementById(‘instructions-text’);
+const $bandha   = document.getElementById(‘bandha-tag’);
+const $list     = document.getElementById(‘instruction-list’);
 
-    // فرمت کردن زمان (اضافه کردن صفر پشت اعداد تک رقمی)
-    function formatTime(seconds) {
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-    }
+// ── Helpers ─────────────────────────────────────────────────────────────────
+function fmt(s) {
+s = Math.max(0, s);
+return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+}
 
-    // به‌روزرسانی ظاهر تایمر و نوار پیشرفت
-    function updateUI() {
-      // آپدیت تایمر مرکزی
-      timerDisplay.textContent = formatTime(currentSeconds);
-      
-      // آپدیت نوار پیشرفت (محاسبه درصد)
-      const percentPassed = ((totalSeconds - currentSeconds) / totalSeconds) * 100;
-      progressFill.style.width = `${percentPassed}%`;
-      
-      // آپدیت زمان گذشته شده در پایین (فرضی برای این تمرین)
-      progressStartText.textContent = formatTime(totalSeconds - currentSeconds);
-    }
+function loadMove(i) {
+const m = SESSION[i];
+$phase.textContent  = m.phase;
+$step.textContent   = `${i+1} / ${TOTAL_STEPS}`;
+$title.textContent  = m.title;
+$instr.textContent  = m.instructions;
+$bandha.textContent = m.bandha;
+$list.innerHTML     = m.steps.map(s => `<li>${s}</li>`).join(’’);
+moveRemaining       = m.duration;
+updateUI();
+}
 
-    // تابع شروع/توقف تایمر
-    function togglePlayPause() {
-      if (isPlaying) {
-        // توقف تایمر
-        clearInterval(timerInterval);
-        playPauseBtn.textContent = '▶'; // آیکون پلی
-        isPlaying = false;
-      } else {
-        // شروع تایمر
-        playPauseBtn.textContent = '⏸'; // آیکون پوز
-        isPlaying = true;
-        
-        timerInterval = setInterval(() => {
-          if (currentSeconds > 0) {
-            currentSeconds--;
-            updateUI();
-          } else {
-            // پایان تایمر
-            clearInterval(timerInterval);
-            playPauseBtn.textContent = '▶';
-            isPlaying = false;
-            alert('Great job! Movement complete.');
-          }
-        }, 1000);
-      }
-    }
+function updateUI() {
+$timer.textContent   = fmt(moveRemaining);
+$elapsed.textContent = fmt(sessionElapsed);
+$total.textContent   = fmt(TOTAL_SESSION_SECONDS);
+$fill.style.width    = `${Math.min(100, (sessionElapsed / TOTAL_SESSION_SECONDS) * 100)}%`;
+}
 
-    // اتصال دکمه به رویداد کلیک
-    playPauseBtn.addEventListener('click', togglePlayPause);
+// ── Tick ─────────────────────────────────────────────────────────────────────
+function tick() {
+if (moveRemaining > 0) {
+moveRemaining–;
+sessionElapsed = Math.min(sessionElapsed + 1, TOTAL_SESSION_SECONDS);
+updateUI();
+} else {
+advanceMove();
+}
+}
 
-    // شروع خودکار برنامه (در صورت تمایل می‌توانید این خط را حذف کنید تا با زدن دکمه پلی شروع شود)
-    timerInterval = setInterval(() => {
-      if (currentSeconds > 0) {
-        currentSeconds--;
-        updateUI();
-      } else {
-        clearInterval(timerInterval);
-        playPauseBtn.textContent = '▶';
-        isPlaying = false;
-      }
-    }, 1000);
+function advanceMove() {
+if (idx < SESSION.length - 1) {
+idx++;
+loadMove(idx);
+} else {
+stopTimer();
+isPlaying = false;
+$ppBtn.textContent = ‘✓’;
+$ppBtn.style.backgroundColor = ‘#10b981’;
+}
+}
 
-    // تنظیم اولیه UI
-    updateUI();
-  </script>
+// ── Timer control ────────────────────────────────────────────────────────────
+function startTimer() {
+clearInterval(ticker);
+ticker = setInterval(tick, 1000);
+isPlaying = true;
+$ppBtn.innerHTML = ‘⏸’;
+$ppBtn.style.backgroundColor = ‘#3b82f6’;
+}
+
+function stopTimer() {
+clearInterval(ticker);
+ticker = null;
+isPlaying = false;
+$ppBtn.innerHTML = ‘▶’;
+}
+
+// ── Buttons ──────────────────────────────────────────────────────────────────
+$ppBtn.addEventListener(‘click’, () => {
+if (isPlaying) stopTimer(); else startTimer();
+});
+
+document.getElementById(‘prev-btn’).addEventListener(‘click’, () => {
+const spent = SESSION[idx].duration - moveRemaining;
+if (spent > 3) {
+// برگشت به اول همین حرکت
+sessionElapsed = Math.max(0, sessionElapsed - spent);
+loadMove(idx);
+} else if (idx > 0) {
+sessionElapsed = Math.max(0, sessionElapsed - spent - SESSION[idx-1].duration);
+idx–;
+loadMove(idx);
+} else {
+sessionElapsed = 0;
+loadMove(0);
+}
+});
+
+document.getElementById(‘next-btn’).addEventListener(‘click’, () => {
+if (idx < SESSION.length - 1) {
+sessionElapsed = Math.min(TOTAL_SESSION_SECONDS, sessionElapsed + moveRemaining);
+idx++;
+loadMove(idx);
+}
+});
+
+document.getElementById(‘skip15-btn’).addEventListener(‘click’, () => {
+const skip = Math.min(15, moveRemaining);
+moveRemaining  -= skip;
+sessionElapsed  = Math.min(TOTAL_SESSION_SECONDS, sessionElapsed + skip);
+if (moveRemaining === 0) advanceMove(); else updateUI();
+});
+
+document.getElementById(‘reset-btn’).addEventListener(‘click’, () => {
+stopTimer();
+idx = 0;
+sessionElapsed = 0;
+loadMove(0);
+// شروع مجدد خودکار
+startTimer();
+});
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+loadMove(0);
+startTimer();
+</script>
 
 </body>
 </html>
