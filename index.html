@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Morning Kriya">
   <title>Morning Kriya Reset</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -14,124 +13,165 @@
 ```
 body {
   background-color: #0b0f19;
-  color: #ffffff;
+  color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   overflow: hidden;
 }
 
-.app-wrapper { display: flex; flex-direction: column; height: 100dvh; width: 100vw; }
+/* ── Splash Screen ── */
+#splash {
+  position: fixed; inset: 0;
+  background: #0b0f19;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 100;
+  gap: 12px;
+  padding: 40px;
+  text-align: center;
+}
+#splash .logo { font-size: 3rem; margin-bottom: 8px; }
+#splash h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: 0.5px; }
+#splash p { color: #8a93a5; font-size: 0.95rem; line-height: 1.5; }
+#splash .session-info {
+  background: #131927; border: 1px solid #1f293d;
+  border-radius: 14px; padding: 16px 24px;
+  margin: 8px 0; width: 100%;
+}
+#splash .session-info span { display: block; color: #8a93a5; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+#splash .session-info strong { font-size: 1.3rem; }
+#start-btn {
+  margin-top: 8px;
+  width: 100%;
+  padding: 18px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+  transition: transform 0.15s, opacity 0.15s;
+}
+#start-btn:active { transform: scale(0.97); opacity: 0.9; }
 
-/* ── Header ── */
+/* ── Main App ── */
+.app-wrapper {
+  display: flex; flex-direction: column;
+  height: 100dvh; width: 100vw;
+}
+
 .top-header { flex: 0 0 auto; padding: 20px 20px 5px; text-align: center; }
 
 .status-bar {
   display: flex; justify-content: space-between;
   font-size: 0.75rem; color: #8a93a5;
-  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 15px;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin-bottom: 15px;
 }
-
 .movement-title { font-size: 1.7rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 5px; }
+.timer-display { font-size: 5.5rem; font-weight: 700; line-height: 1; letter-spacing: -2px; }
 
-.timer-display {
-  font-size: 5.5rem; font-weight: 700;
-  line-height: 1; letter-spacing: -2px; margin: 0;
-}
-
-/* ── Scrollable ── */
 .scrollable-content {
   flex: 1 1 auto; min-height: 0; overflow-y: auto;
-  padding: 10px 20px 20px; display: flex; flex-direction: column; gap: 15px;
+  padding: 10px 20px 20px;
+  display: flex; flex-direction: column; gap: 15px;
   -ms-overflow-style: none; scrollbar-width: none;
 }
 .scrollable-content::-webkit-scrollbar { display: none; }
 
-.content-box {
-  background-color: #131927; border: 1px solid #1f293d;
-  border-radius: 16px; padding: 18px;
-}
-
+.content-box { background: #131927; border: 1px solid #1f293d; border-radius: 16px; padding: 18px; }
 .instructions-text { font-size: 1.05rem; line-height: 1.5; color: #d1d5db; margin-bottom: 15px; }
-
 .bandha-tag {
-  display: inline-block;
-  background-color: rgba(255,139,139,0.1); color: #ff8b8b;
+  display: inline-block; background: rgba(255,139,139,0.1); color: #ff8b8b;
   padding: 6px 14px; border-radius: 20px; font-size: 0.85rem;
   border: 1px solid rgba(255,139,139,0.3);
 }
-
-.section-title {
-  font-size: 0.8rem; color: #8a93a5; letter-spacing: 1.5px;
-  text-transform: uppercase; margin-bottom: 15px; font-weight: 600;
-}
-
-.instruction-list { list-style-type: none; counter-reset: custom-counter; }
-.instruction-list li {
-  counter-increment: custom-counter; margin-bottom: 12px;
-  font-size: 0.95rem; line-height: 1.4; color: #b0b8c9; display: flex;
-}
-.instruction-list li::before {
-  content: counter(custom-counter) ".";
-  color: #fff; font-weight: bold; margin-right: 10px; min-width: 15px;
-}
+.section-title { font-size: 0.8rem; color: #8a93a5; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 15px; font-weight: 600; }
+.instruction-list { list-style: none; counter-reset: cc; }
+.instruction-list li { counter-increment: cc; margin-bottom: 12px; font-size: 0.95rem; line-height: 1.4; color: #b0b8c9; display: flex; }
+.instruction-list li::before { content: counter(cc) "."; color: #fff; font-weight: bold; margin-right: 10px; min-width: 15px; }
 
 /* ── Bottom Player ── */
 .bottom-player {
   flex: 0 0 auto; padding: 15px 20px;
   padding-bottom: calc(15px + env(safe-area-inset-bottom));
-  background-color: #0b0f19;
+  background: #0b0f19;
 }
 
 .progress-bar-container {
   display: flex; align-items: center; gap: 12px;
   margin-bottom: 15px; font-size: 0.8rem; color: #6b7280;
 }
-
-.progress-bar {
-  flex-grow: 1; height: 4px; background-color: #1f293d;
-  border-radius: 2px; position: relative; overflow: hidden;
-}
-
-.progress-fill {
-  position: absolute; left: 0; top: 0; height: 100%;
-  background-color: #6366f1; width: 0%; border-radius: 2px;
-  transition: width 1s linear;
-}
+.progress-bar { flex-grow: 1; height: 4px; background: #1f293d; border-radius: 2px; position: relative; overflow: hidden; }
+.progress-fill { position: absolute; left: 0; top: 0; height: 100%; background: #6366f1; width: 0%; border-radius: 2px; transition: width 1s linear; }
 
 .controls { display: flex; justify-content: center; align-items: center; gap: 14px; }
 
 .control-btn {
-  background-color: #131927; border: none; color: #9ca3af;
-  font-size: 1.2rem; cursor: pointer;
+  background: none; border: none; color: #9ca3af; font-size: 1.2rem; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  width: 45px; height: 45px; border-radius: 50%; transition: all 0.2s;
+  width: 45px; height: 45px; border-radius: 50%;
+  background-color: #131927; transition: all 0.2s;
+  flex-shrink: 0;
 }
-.control-btn:active { transform: scale(0.88); }
-
+.control-btn:active { transform: scale(0.9); }
 .control-btn.play-pause {
-  width: 65px; height: 65px;
-  background-color: #3b82f6; color: white; font-size: 1.8rem;
-  box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+  width: 65px; height: 65px; background-color: #3b82f6; color: #fff;
+  font-size: 1.8rem; box-shadow: 0 4px 15px rgba(59,130,246,0.4);
 }
+.control-btn.reset-btn { background-color: #1f2937; color: #ef4444; font-size: 1rem; }
+.skip-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0; }
 
-.control-btn.reset-btn {
-  background-color: #1f293d; color: #f87171;
-  font-size: 1rem; font-weight: 700; letter-spacing: -0.5px;
+/* ── Finish Screen ── */
+#finish {
+  display: none; position: fixed; inset: 0; background: #0b0f19;
+  flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 16px; padding: 40px; z-index: 100;
 }
-
-.skip-label { font-size: 0.78rem; font-weight: 700; }
+#finish .check { font-size: 4rem; }
+#finish h2 { font-size: 2rem; font-weight: 800; }
+#finish p { color: #8a93a5; font-size: 1rem; }
+#restart-btn {
+  margin-top: 12px; width: 100%; padding: 18px;
+  background: #3b82f6; color: #fff; border: none; border-radius: 16px;
+  font-size: 1.1rem; font-weight: 700; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(59,130,246,0.4);
+}
+#restart-btn:active { transform: scale(0.97); }
 ```
 
   </style>
 </head>
 <body>
-<div class="app-wrapper">
+
+<!-- ══ SPLASH ══ -->
+
+<div id="splash">
+  <div class="logo">🌅</div>
+  <h1>Morning Kriya Reset</h1>
+  <p>A complete 20-movement kriya session to awaken your body and energy.</p>
+  <div class="session-info">
+    <span>Total Session</span>
+    <strong id="splash-total">21:13</strong>
+  </div>
+  <div class="session-info">
+    <span>Movements</span>
+    <strong>20 movements</strong>
+  </div>
+  <button id="start-btn">▶ &nbsp; Start Session</button>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+
+<div class="app-wrapper" id="main-app" style="display:none">
 
   <header class="top-header">
     <div class="status-bar">
       <span id="phase-label">Warm-Up</span>
       <span id="step-counter">1 / 20</span>
     </div>
-    <h1 class="movement-title" id="movement-title">Root Stomp &amp; Bounce</h1>
+    <h1 class="movement-title" id="movement-title">—</h1>
     <div class="timer-display" id="main-timer">01:00</div>
   </header>
 
@@ -150,188 +190,270 @@ body {
     <div class="progress-bar-container">
       <span id="progress-elapsed">00:00</span>
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-      <span id="progress-total">00:00</span>
+      <span id="progress-total">21:13</span>
     </div>
     <div class="controls">
-      <button class="control-btn" id="prev-btn">⏮</button>
+      <button class="control-btn" id="prev-btn" title="Previous">⏮</button>
       <button class="control-btn play-pause" id="play-pause-btn">⏸</button>
-      <button class="control-btn" id="next-btn">⏭</button>
+      <button class="control-btn" id="next-btn" title="Next">⏭</button>
       <button class="control-btn skip-label" id="skip15-btn">+15</button>
-      <button class="control-btn reset-btn" id="reset-btn" title="Reset">↺</button>
+      <button class="control-btn reset-btn" id="reset-btn" title="Reset session">↺</button>
     </div>
   </footer>
-
 </div>
+
+<!-- ══ FINISH ══ -->
+
+<div id="finish">
+  <div class="check">✅</div>
+  <h2>Session Complete!</h2>
+  <p>You finished all 20 movements.<br>Great work today.</p>
+  <button id="restart-btn">↺ &nbsp; Start Again</button>
+</div>
+
 <script>
-// ── Session Data ────────────────────────────────────────────────────────────
+// ─── SESSION DATA ────────────────────────────────────────────────────────────
 const SESSION = [
-  {
-    title: "Root Stomp & Bounce", phase: "Warm-Up", duration: 60,
-    instructions: "Stand barefoot. Bounce gently from both knees — heels barely leave the ground. Arms hang completely loose. After 20s add a soft heel-stomp on each downbeat.",
-    steps: ["Stand barefoot on the floor.", "Bounce gently from both knees — heels barely leave the ground.", "Let arms hang completely loose and shake naturally.", "After 20 seconds, add a soft heel-stomp on each downbeat.", "Keep the whole body soft — jaw relaxed, shoulders dropped."],
-    bandha: "Mula Bandha — light"
-  },
-  {
-    title: "Spinal Rock", phase: "Warm-Up", duration: 60,
-    instructions: "Sit cross-legged. Rock forward and back on your sit bones with each breath. Let the movement flow from the base of the spine.",
-    steps: ["Sit comfortably cross-legged.", "Inhale and rock forward, lengthening the spine.", "Exhale and rock back gently.", "Keep the rhythm steady with your breath.", "Allow the movement to become fluid and natural."],
-    bandha: "Mula Bandha — light"
-  },
-  {
-    title: "Breath of Fire", phase: "Pranayama", duration: 120,
-    instructions: "Rapid rhythmic breathing through the nose. Equal inhale and exhale. Navel pumps in on each exhale. Start slow, build speed.",
-    steps: ["Sit tall in easy pose.", "Begin slow rhythmic nasal breathing.", "Navel pulls in sharply on each exhale.", "Gradually increase the pace.", "Keep the breath equal and steady."],
-    bandha: "Uddiyana Bandha — engaged"
-  },
-  {
-    title: "Ego Eradicator", phase: "Kriya", duration: 180,
-    instructions: "Arms up at 60°, fingertips curled to pads. Breath of Fire. Feel the energy rise up the spine and radiate through the fingertips.",
-    steps: ["Raise arms to 60° from horizontal.", "Curl fingers onto finger pads, thumbs up.", "Begin Breath of Fire.", "Hold the posture steady.", "Inhale, bring thumbs together overhead, exhale and release."],
-    bandha: "Mula Bandha — strong"
-  },
-  {
-    title: "Sat Kriya", phase: "Kriya", duration: 180,
-    instructions: "Sit on heels, arms overhead, palms together. Chant SAT as you pump the navel. NAM as you release. Rhythmic and continuous.",
-    steps: ["Sit on heels, spine tall.", "Interlace fingers, extend index fingers up.", "Chant SAT — pump navel in.", "Chant NAM — release navel.", "Maintain the rhythm for the full duration."],
-    bandha: "Mula Bandha — rhythmic"
-  }
+  { title:"Root Stomp & Bounce", phase:"Warm-Up", duration:60,
+    instructions:"Stand barefoot. Bounce gently from both knees — heels barely leave the ground. Arms hang completely loose. After 20s add a soft heel-stomp on each downbeat.",
+    steps:["Stand barefoot on the floor.","Bounce gently from both knees — heels barely leave the ground.","Let arms hang completely loose and shake naturally.","After 20 seconds, add a soft heel-stomp on each downbeat.","Keep the whole body soft — jaw relaxed, shoulders dropped."],
+    bandha:"Mula Bandha — light" },
+  { title:"Spinal Rock", phase:"Warm-Up", duration:60,
+    instructions:"Sit cross-legged. Rock forward and back on your sit bones with each breath. Let the movement flow from the base of the spine.",
+    steps:["Sit comfortably cross-legged.","Inhale and rock forward, lengthening the spine.","Exhale and rock back gently.","Keep the rhythm steady with your breath.","Allow the movement to become fluid and natural."],
+    bandha:"Mula Bandha — light" },
+  { title:"Neck Rolls", phase:"Warm-Up", duration:60,
+    instructions:"Slow circular neck rolls, 5 each direction. Keep shoulders relaxed. Never force the range of motion.",
+    steps:["Drop chin to chest gently.","Slowly roll ear toward right shoulder.","Continue rolling head back.","Roll to left shoulder and return to center.","Repeat 5 times each direction."],
+    bandha:"Jalandhara Bandha — soft" },
+  { title:"Shoulder Circles", phase:"Warm-Up", duration:60,
+    instructions:"Large shoulder circles, arms at sides. 10 forward, 10 backward. Open the chest on the backward roll.",
+    steps:["Stand tall, arms relaxed.","Lift shoulders up toward ears.","Roll them back and down.","Complete 10 full backward circles.","Reverse and do 10 forward circles."],
+    bandha:"None" },
+  { title:"Hip Circles", phase:"Warm-Up", duration:60,
+    instructions:"Feet hip-width apart. Large slow circles with the hips. 10 each direction. Keep knees soft.",
+    steps:["Stand with feet hip-width apart.","Place hands on hips.","Begin slow circles to the right.","Keep knees slightly bent.","Complete 10 each direction."],
+    bandha:"Mula Bandha — light" },
+  { title:"Breath of Fire", phase:"Pranayama", duration:120,
+    instructions:"Rapid rhythmic breathing through the nose. Equal inhale and exhale. Navel pumps in on each exhale. Start slow, build speed.",
+    steps:["Sit tall in easy pose.","Begin slow rhythmic nasal breathing.","Navel pulls in sharply on each exhale.","Gradually increase the pace.","Keep the breath equal and steady."],
+    bandha:"Uddiyana Bandha — engaged" },
+  { title:"Long Deep Breathing", phase:"Pranayama", duration:120,
+    instructions:"Breathe in completely from the belly to the chest. Exhale fully from the chest down to the navel. 4-count in, 4-count out.",
+    steps:["Sit in easy pose, spine tall.","Inhale slowly into the belly first.","Continue filling chest and collarbones.","Exhale from collarbones down.","Empty completely before next inhale."],
+    bandha:"Mula Bandha — light" },
+  { title:"Alternate Nostril Breathing", phase:"Pranayama", duration:120,
+    instructions:"Right hand: thumb closes right nostril, ring finger closes left. Inhale left, exhale right, inhale right, exhale left. One round.",
+    steps:["Curl index and middle finger of right hand.","Close right nostril with thumb.","Inhale slowly through left nostril.","Close left, open right. Exhale.","Inhale right. Switch. Exhale left. Repeat."],
+    bandha:"Mula Bandha — light" },
+  { title:"Cat-Cow Spinal Flex", phase:"Kriya", duration:90,
+    instructions:"On all fours. Inhale: drop belly, lift gaze (cow). Exhale: round spine, tuck chin (cat). Move with the breath.",
+    steps:["Start on hands and knees, neutral spine.","Inhale: let belly drop, lift chest and tailbone.","Exhale: press floor away, round spine fully.","Let breath lead — don't rush.","Keep arms straight and shoulders away from ears."],
+    bandha:"Mula Bandha on exhale" },
+  { title:"Downward Dog Pedal", phase:"Kriya", duration:60,
+    instructions:"Downward-facing dog. Alternate bending each knee, pressing the opposite heel down. Walk the feet for 1 minute.",
+    steps:["Come into downward-facing dog.","Press right heel toward the floor.","Bend left knee, lift left heel.","Alternate slowly, feeling the stretch.","Keep hips high and spine long."],
+    bandha:"Uddiyana Bandha — light" },
+  { title:"Frog Pose", phase:"Kriya", duration:90,
+    instructions:"Deep squat, heels together, toes out, hands on floor. Rise on inhale, drop on exhale. 26 repetitions.",
+    steps:["Squat with heels together, toes turned out.","Place fingertips on the floor in front.","Inhale: straighten legs, raise hips.","Exhale: drop back into squat.","Keep spine as straight as possible."],
+    bandha:"Mula Bandha — strong on rise" },
+  { title:"Sat Kriya", phase:"Kriya", duration:180,
+    instructions:"Sit on heels, arms straight up, palms together, index fingers extended. Chant SAT — navel pulls in. TAA — navel releases.",
+    steps:["Sit on your heels (rock pose).","Stretch arms overhead, palms together.","Chant SAT: pull navel in sharply.","Chant NAM: release navel gently.","Keep a steady, rhythmic pace."],
+    bandha:"Mula Bandha on SAT" },
+  { title:"Ego Eradicator", phase:"Kriya", duration:60,
+    instructions:"Sit in easy pose. Arms at 60°, thumbs up, fingers curled. Breath of Fire. On inhale: sweep arms overhead and touch thumbs. Exhale: lower.",
+    steps:["Sit in easy pose, spine tall.","Raise arms to 60°, thumbs pointing up.","Curl fingers onto palm pads.","Begin Breath of Fire.","After 1 minute: inhale, sweep arms up, touch thumbs."],
+    bandha:"Uddiyana Bandha — engaged" },
+  { title:"Corpse Pose", phase:"Rest", duration:120,
+    instructions:"Lie flat on your back, arms at sides, palms up. Allow the body to completely relax. Scan from feet to crown and release all tension.",
+    steps:["Lie on your back on the floor.","Extend legs, let feet fall open naturally.","Arms at sides, palms facing up.","Close eyes. Release all muscular effort.","Breathe naturally and deeply."],
+    bandha:"None — total release" },
+  { title:"Stretch Pose", phase:"Kriya", duration:60,
+    instructions:"Lie on back, raise head and heels 6 inches. Arms toward feet. Breath of Fire for 1 minute. Strengthens the navel point.",
+    steps:["Lie flat on your back.","Raise head, feet and hands 6 inches.","Fix gaze on toes.","Begin Breath of Fire.","Hold the position for the full minute."],
+    bandha:"Uddiyana Bandha — strong" },
+  { title:"Bow Pose", phase:"Kriya", duration:60,
+    instructions:"Lie on belly. Reach back and hold ankles. Inhale, lift chest and thighs. Rock on the belly with the breath.",
+    steps:["Lie on your belly.","Bend knees, reach back to hold ankles.","Inhale: kick feet up, lift chest.","Rock forward on exhale, back on inhale.","Keep gaze forward and breath steady."],
+    bandha:"Mula Bandha — light" },
+  { title:"Spinal Twist", phase:"Cool-Down", duration:60,
+    instructions:"Sit cross-legged. Right hand on left knee, left hand behind. Inhale elongate, exhale twist deeper. 3 deep breaths each side.",
+    steps:["Sit in easy pose.","Place right hand on left knee.","Left hand on floor behind your tailbone.","Inhale: grow tall.","Exhale: gently deepen the twist."],
+    bandha:"Mula Bandha — light" },
+  { title:"Forward Fold", phase:"Cool-Down", duration:60,
+    instructions:"Extend legs forward. Inhale, reach up. Exhale, hinge from the hips and fold forward. Hold for 5 breaths.",
+    steps:["Sit with legs extended in front.","Inhale: raise arms overhead.","Exhale: hinge at hips, fold forward.","Hold shins, ankles or feet.","Breathe deeply for 5 full breaths."],
+    bandha:"None" },
+  { title:"Long Sat Nam", phase:"Meditation", duration:180,
+    instructions:"Sit in easy pose. Eyes closed at the third eye. Inhale SAT (8 counts), exhale NAM (1 count). Tune in to your true identity.",
+    steps:["Sit in comfortable easy pose.","Bring hands to prayer at heart.","Inhale slowly, mentally chant SAT for 8 counts.","Exhale fully with NAM on 1 count.","Continue for 3 minutes in stillness."],
+    bandha:"Mula Bandha — light" },
+  { title:"Gong Bath Rest", phase:"Meditation", duration:120,
+    instructions:"Final savasana. Let every cell of the body integrate the practice. No effort — just receive and rest completely.",
+    steps:["Lie fully flat on your back.","Cover yourself if possible.","Close eyes. Let go of all control.","Allow the body to absorb the practice.","Rest completely until the session ends."],
+    bandha:"None — total surrender" }
 ];
 
-const TOTAL_SESSION_SECONDS = SESSION.reduce((a, m) => a + m.duration, 0);
-const TOTAL_STEPS = SESSION.length;
+const TOTAL_SESSION_SECS = SESSION.reduce((a, m) => a + m.duration, 0);
 
-// ── State ───────────────────────────────────────────────────────────────────
+// ─── STATE ───────────────────────────────────────────────────────────────────
 let idx = 0;
-let moveRemaining = 0;
-let sessionElapsed = 0;
-let isPlaying = true;
+let moveLeft = SESSION[0].duration;
+let sessElapsed = 0;
+let playing = false;
 let ticker = null;
 
-// ── DOM ─────────────────────────────────────────────────────────────────────
-const $timer    = document.getElementById(‘main-timer’);
-const $ppBtn    = document.getElementById(‘play-pause-btn’);
-const $fill     = document.getElementById(‘progress-fill’);
-const $elapsed  = document.getElementById(‘progress-elapsed’);
-const $total    = document.getElementById(‘progress-total’);
-const $phase    = document.getElementById(‘phase-label’);
-const $step     = document.getElementById(‘step-counter’);
-const $title    = document.getElementById(‘movement-title’);
-const $instr    = document.getElementById(‘instructions-text’);
-const $bandha   = document.getElementById(‘bandha-tag’);
-const $list     = document.getElementById(‘instruction-list’);
+// ─── DOM ─────────────────────────────────────────────────────────────────────
+const splash        = document.getElementById('splash');
+const mainApp       = document.getElementById('main-app');
+const finishScreen  = document.getElementById('finish');
+const startBtn      = document.getElementById('start-btn');
+const restartBtn    = document.getElementById('restart-btn');
+const timerEl       = document.getElementById('main-timer');
+const ppBtn         = document.getElementById('play-pause-btn');
+const pFill         = document.getElementById('progress-fill');
+const pElapsed      = document.getElementById('progress-elapsed');
+const pTotal        = document.getElementById('progress-total');
+const phaseEl       = document.getElementById('phase-label');
+const stepEl        = document.getElementById('step-counter');
+const titleEl       = document.getElementById('movement-title');
+const instrEl       = document.getElementById('instructions-text');
+const bandhaEl      = document.getElementById('bandha-tag');
+const listEl        = document.getElementById('instruction-list');
+const splashTotal   = document.getElementById('splash-total');
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
 function fmt(s) {
-s = Math.max(0, s);
-return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  s = Math.max(0, s);
+  return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
 }
 
 function loadMove(i) {
-const m = SESSION[i];
-$phase.textContent  = m.phase;
-$step.textContent   = `${i+1} / ${TOTAL_STEPS}`;
-$title.textContent  = m.title;
-$instr.textContent  = m.instructions;
-$bandha.textContent = m.bandha;
-$list.innerHTML     = m.steps.map(s => `<li>${s}</li>`).join(’’);
-moveRemaining       = m.duration;
-updateUI();
+  const m = SESSION[i];
+  phaseEl.textContent  = m.phase;
+  stepEl.textContent   = `${i+1} / ${SESSION.length}`;
+  titleEl.textContent  = m.title;
+  instrEl.textContent  = m.instructions;
+  bandhaEl.textContent = m.bandha;
+  listEl.innerHTML     = m.steps.map(s=>`<li>${s}</li>`).join('');
+  moveLeft = m.duration;
+  updateUI();
+  // scroll content to top when movement changes
+  document.querySelector('.scrollable-content').scrollTop = 0;
 }
 
 function updateUI() {
-$timer.textContent   = fmt(moveRemaining);
-$elapsed.textContent = fmt(sessionElapsed);
-$total.textContent   = fmt(TOTAL_SESSION_SECONDS);
-$fill.style.width    = `${Math.min(100, (sessionElapsed / TOTAL_SESSION_SECONDS) * 100)}%`;
+  timerEl.textContent   = fmt(moveLeft);
+  const pct = (sessElapsed / TOTAL_SESSION_SECS) * 100;
+  pFill.style.width     = `${Math.min(pct, 100)}%`;
+  pElapsed.textContent  = fmt(sessElapsed);
+  pTotal.textContent    = fmt(TOTAL_SESSION_SECS - sessElapsed);
 }
 
-// ── Tick ─────────────────────────────────────────────────────────────────────
 function tick() {
-if (moveRemaining > 0) {
-moveRemaining–;
-sessionElapsed = Math.min(sessionElapsed + 1, TOTAL_SESSION_SECONDS);
-updateUI();
-} else {
-advanceMove();
-}
-}
-
-function advanceMove() {
-if (idx < SESSION.length - 1) {
-idx++;
-loadMove(idx);
-} else {
-stopTimer();
-isPlaying = false;
-$ppBtn.textContent = ‘✓’;
-$ppBtn.style.backgroundColor = ‘#10b981’;
-}
+  if (moveLeft > 0) {
+    moveLeft--;
+    sessElapsed = Math.min(sessElapsed + 1, TOTAL_SESSION_SECS);
+    updateUI();
+  } else {
+    if (idx < SESSION.length - 1) {
+      idx++;
+      loadMove(idx);
+    } else {
+      endSession();
+    }
+  }
 }
 
-// ── Timer control ────────────────────────────────────────────────────────────
-function startTimer() {
-clearInterval(ticker);
-ticker = setInterval(tick, 1000);
-isPlaying = true;
-$ppBtn.innerHTML = ‘⏸’;
-$ppBtn.style.backgroundColor = ‘#3b82f6’;
+function startTicker() {
+  clearInterval(ticker);
+  ticker = setInterval(tick, 1000);
+  playing = true;
+  ppBtn.textContent = '⏸';
 }
 
-function stopTimer() {
-clearInterval(ticker);
-ticker = null;
-isPlaying = false;
-$ppBtn.innerHTML = ‘▶’;
+function stopTicker() {
+  clearInterval(ticker);
+  playing = false;
+  ppBtn.textContent = '▶';
 }
 
-// ── Buttons ──────────────────────────────────────────────────────────────────
-$ppBtn.addEventListener(‘click’, () => {
-if (isPlaying) stopTimer(); else startTimer();
+function endSession() {
+  stopTicker();
+  mainApp.style.display = 'none';
+  finishScreen.style.display = 'flex';
+}
+
+function fullReset() {
+  stopTicker();
+  idx = 0;
+  sessElapsed = 0;
+  loadMove(0);
+}
+
+// ─── SPLASH ──────────────────────────────────────────────────────────────────
+splashTotal.textContent = fmt(TOTAL_SESSION_SECS);
+startBtn.addEventListener('click', () => {
+  splash.style.display = 'none';
+  mainApp.style.display = 'flex';
+  loadMove(0);
+  startTicker();
 });
 
-document.getElementById(‘prev-btn’).addEventListener(‘click’, () => {
-const spent = SESSION[idx].duration - moveRemaining;
-if (spent > 3) {
-// برگشت به اول همین حرکت
-sessionElapsed = Math.max(0, sessionElapsed - spent);
-loadMove(idx);
-} else if (idx > 0) {
-sessionElapsed = Math.max(0, sessionElapsed - spent - SESSION[idx-1].duration);
-idx–;
-loadMove(idx);
-} else {
-sessionElapsed = 0;
-loadMove(0);
-}
+// ─── FINISH ──────────────────────────────────────────────────────────────────
+restartBtn.addEventListener('click', () => {
+  finishScreen.style.display = 'none';
+  mainApp.style.display = 'flex';
+  fullReset();
+  startTicker();
 });
 
-document.getElementById(‘next-btn’).addEventListener(‘click’, () => {
-if (idx < SESSION.length - 1) {
-sessionElapsed = Math.min(TOTAL_SESSION_SECONDS, sessionElapsed + moveRemaining);
-idx++;
-loadMove(idx);
-}
+// ─── CONTROLS ────────────────────────────────────────────────────────────────
+ppBtn.addEventListener('click', () => {
+  if (playing) stopTicker(); else startTicker();
 });
 
-document.getElementById(‘skip15-btn’).addEventListener(‘click’, () => {
-const skip = Math.min(15, moveRemaining);
-moveRemaining  -= skip;
-sessionElapsed  = Math.min(TOTAL_SESSION_SECONDS, sessionElapsed + skip);
-if (moveRemaining === 0) advanceMove(); else updateUI();
+document.getElementById('prev-btn').addEventListener('click', () => {
+  const elapsed = SESSION[idx].duration - moveLeft;
+  if (elapsed > 3) {
+    sessElapsed = Math.max(0, sessElapsed - elapsed);
+    loadMove(idx);
+  } else if (idx > 0) {
+    sessElapsed = Math.max(0, sessElapsed - elapsed - SESSION[idx-1].duration);
+    idx--;
+    loadMove(idx);
+  } else {
+    sessElapsed = 0;
+    loadMove(0);
+  }
+  if (!playing) ppBtn.textContent = '▶';
 });
 
-document.getElementById(‘reset-btn’).addEventListener(‘click’, () => {
-stopTimer();
-idx = 0;
-sessionElapsed = 0;
-loadMove(0);
-// شروع مجدد خودکار
-startTimer();
+document.getElementById('next-btn').addEventListener('click', () => {
+  if (idx < SESSION.length - 1) {
+    sessElapsed = Math.min(sessElapsed + moveLeft, TOTAL_SESSION_SECS);
+    idx++;
+    loadMove(idx);
+  }
+  if (!playing) ppBtn.textContent = '▶';
 });
 
-// ── Init ─────────────────────────────────────────────────────────────────────
-loadMove(0);
-startTimer();
+document.getElementById('skip15-btn').addEventListener('click', () => {
+  const skip = Math.min(15, moveLeft);
+  moveLeft -= skip;
+  sessElapsed = Math.min(sessElapsed + skip, TOTAL_SESSION_SECS);
+  if (moveLeft === 0) tick();
+  else updateUI();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  fullReset();
+  stopTicker();
+  // go back to splash? No — just reset in-app and pause
+  ppBtn.textContent = '▶';
+});
 </script>
 
 </body>
