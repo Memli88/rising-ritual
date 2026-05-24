@@ -1,6 +1,6 @@
 // ─── Service Worker v3 ───────────────────────────────────────────────────────
 // ورژن رو هر بار که index.html رو عوض میکنی +1 کن
-const CACHE_NAME = ‘kriya-v3’;
+const CACHE_NAME = ‘kriya-v4’;
 const ASSETS = [’./’, ‘./index.html’, ‘./manifest.json’];
 
 self.addEventListener(‘install’, e => {
